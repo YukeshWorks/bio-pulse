@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tmp
+*.log
+.env
+.env.*
+!.env.example
+node_modules/.tmp/
+.DS_Store
+fixtures/demo/.work/
