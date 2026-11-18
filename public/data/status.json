@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "lastAttempt": "2026-11-18T19:11:44.231Z",
+  "lastAttemptDate": "2026-11-19",
+  "outcome": "published",
+  "lastSuccessfulUpdate": "2026-11-18T19:11:44.231Z",
+  "lastSuccessfulDate": "2026-11-19",
+  "message": "Published 200 verified records.",
+  "sources": [
+    {
+      "id": "pubmed",
+      "name": "PubMed (NCBI E-utilities)",
+      "status": "ok",
+      "fetched": 179,
+      "accepted": 110,
+      "rejected": 0,
+      "durationMs": 15243
+    },
+    {
+      "id": "europepmc",
+      "name": "Europe PMC",
+      "status": "ok",
+      "fetched": 150,
+      "accepted": 84,
+      "rejected": 12,
+      "durationMs": 22767
+    },
+    {
+      "id": "biorxiv",
+      "name": "bioRxiv",
+      "status": "ok",
+      "fetched": 203,
+      "accepted": 0,
+      "rejected": 41,
+      "durationMs": 9403,
+      "note": "stopped after 10 pages (300/592 postings scanned)"
+    },
+    {
+      "id": "medrxiv",
+      "name": "medRxiv",
+      "status": "ok",
+      "fetched": 10,
+      "accepted": 0,
+      "rejected": 1,
+      "durationMs": 2813
+    },
+    {
+      "id": "clinicaltrials",
+      "name": "ClinicalTrials.gov",
+      "status": "ok",
+      "fetched": 17,
+      "accepted": 5,
+      "rejected": 0,
+      "durationMs": 382
+    },
+    {
+      "id": "fda",
+      "name": "U.S. FDA (official RSS)",
+      "status": "ok",
+      "fetched": 11,
+      "accepted": 0,
+      "rejected": 11,
+      "durationMs": 289
+    },
+    {
+      "id": "ema",
+      "name": "European Medicines Agency (official RSS)",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 299
+    },
+    {
+      "id": "epo",
+      "name": "EPO Open Patent Services",
+      "status": "skipped",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 0,
+      "note": "EPO OPS credentials not configured (EPO_OPS_KEY / EPO_OPS_SECRET)"
+    },
+    {
+      "id": "company",
+      "name": "Company announcements (configured feeds)",
+      "status": "skipped",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 0,
+      "note": "no company feeds configured (BIOPULSE_COMPANY_FEEDS)"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-11-18T19:11:44.231Z",
+      "outcome": "published",
+      "records": 200,
+      "failedSources": []
+    }
+  ]
+}

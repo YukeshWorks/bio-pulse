@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-18T19:11:44.231Z",
+  "days": [
+    {
+      "date": "2026-11-19",
+      "total": 200,
+      "byEvidence": {
+        "PEER-REVIEWED": 194,
+        "CLINICAL TRIAL": 5,
+        "REGULATORY UPDATE": 1
+      },
+      "briefing": "Microbiology led today's 200 verified biotech updates, headlined by a peer-reviewed study on “The impact of childhood obesity on…” and a peer-reviewed study on “Integrated QTL mapping and CRISPR screening…”."
+    }
+  ]
+}
