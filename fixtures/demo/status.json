@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "lastAttempt": "2026-11-18T01:30:00.000Z",
+  "lastAttemptDate": "2026-11-18",
+  "outcome": "published",
+  "lastSuccessfulUpdate": "2026-11-18T01:30:00.000Z",
+  "lastSuccessfulDate": "2026-11-18",
+  "message": "Published 19 verified records.",
+  "sources": [
+    {
+      "id": "pubmed",
+      "name": "PubMed (NCBI E-utilities)",
+      "status": "ok",
+      "fetched": 11,
+      "accepted": 11,
+      "rejected": 0,
+      "durationMs": 9
+    },
+    {
+      "id": "europepmc",
+      "name": "Europe PMC",
+      "status": "ok",
+      "fetched": 2,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 3
+    },
+    {
+      "id": "biorxiv",
+      "name": "bioRxiv",
+      "status": "ok",
+      "fetched": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "durationMs": 3
+    },
+    {
+      "id": "medrxiv",
+      "name": "medRxiv",
+      "status": "empty",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 3
+    },
+    {
+      "id": "clinicaltrials",
+      "name": "ClinicalTrials.gov",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 3
+    },
+    {
+      "id": "fda",
+      "name": "U.S. FDA (official RSS)",
+      "status": "ok",
+      "fetched": 3,
+      "accepted": 1,
+      "rejected": 2,
+      "durationMs": 4,
+      "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items"
+    },
+    {
+      "id": "ema",
+      "name": "European Medicines Agency (official RSS)",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 3
+    },
+    {
+      "id": "epo",
+      "name": "EPO Open Patent Services",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 4
+    },
+    {
+      "id": "company",
+      "name": "Company announcements (configured feeds)",
+      "status": "skipped",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 0,
+      "note": "no company feeds configured (BIOPULSE_COMPANY_FEEDS)"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-11-18T01:30:00.000Z",
+      "outcome": "published",
+      "records": 19,
+      "failedSources": []
+    },
+    {
+      "at": "2026-11-17T01:30:00.000Z",
+      "outcome": "published",
+      "records": 12,
+      "failedSources": []
+    },
+    {
+      "at": "2026-11-16T01:30:00.000Z",
+      "outcome": "published",
+      "records": 12,
+      "failedSources": []
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-18T01:30:00.000Z",
+  "days": [
+    {
+      "date": "2026-11-18",
+      "total": 19,
+      "byEvidence": {
+        "PEER-REVIEWED": 11,
+        "REGULATORY UPDATE": 2,
+        "CLINICAL TRIAL": 1,
+        "PREPRINT": 4,
+        "PATENT APPLICATION": 1
+      },
+      "briefing": "Immunotechnology led today's 19 verified biotech updates, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate…” and a peer-reviewed study on “A wearable aptamer biosensor for continuous…”."
+    },
+    {
+      "date": "2026-11-17",
+      "total": 12,
+      "byEvidence": {
+        "PEER-REVIEWED": 4,
+        "REGULATORY UPDATE": 2,
+        "CLINICAL TRIAL": 1,
+        "PREPRINT": 4,
+        "PATENT APPLICATION": 1
+      },
+      "briefing": "Immunotechnology led today's 12 verified biotech updates, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate…” and a peer-reviewed study on “Deep learning prediction of antibody developability…”."
+    },
+    {
+      "date": "2026-11-16",
+      "total": 12,
+      "byEvidence": {
+        "PEER-REVIEWED": 5,
+        "REGULATORY UPDATE": 1,
+        "CLINICAL TRIAL": 1,
+        "PREPRINT": 4,
+        "PATENT APPLICATION": 1
+      },
+      "briefing": "Genetic engineering & CRISPR led today's 12 verified biotech updates, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor”."
+    }
+  ]
+}

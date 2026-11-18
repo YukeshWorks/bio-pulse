@@ -1,0 +1,986 @@
+{
+  "schemaVersion": 1,
+  "dataset": "demo",
+  "date": "2026-11-17",
+  "timezone": "Asia/Kolkata",
+  "generatedAt": "2026-11-17T01:30:00.000Z",
+  "window": {
+    "from": "2026-11-15",
+    "to": "2026-11-17"
+  },
+  "briefing": {
+    "sentence": "Immunotechnology led today's 12 verified biotech updates, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate…” and a peer-reviewed study on “Deep learning prediction of antibody developability…”.",
+    "wordCount": 30,
+    "citations": [
+      "doi-a3e8fdfa99b1",
+      "doi-f012aad92cc8"
+    ],
+    "method": "deterministic",
+    "note": "DEMO: generated from fictional demonstration records."
+  },
+  "topDiscoveries": [
+    {
+      "recordId": "doi-a3e8fdfa99b1",
+      "rank": 1,
+      "analysis": {
+        "whatHappened": {
+          "text": "Rivera A, Okafor C: “Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor” — journal article in Journal of Synthetic Test Biology, published 2026-11-17.",
+          "basis": "metadata"
+        },
+        "whatWasDeveloped": {
+          "text": "We developed an engineered adenine base editor delivered by lipid nanoparticles.",
+          "basis": "source"
+        },
+        "whatIsNew": {
+          "text": "A comparison with previous approaches is not stated in the available source metadata.",
+          "basis": "unavailable"
+        },
+        "whyImportant": {
+          "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+          "basis": "template"
+        },
+        "limitations": {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results. BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        },
+        "whatNext": {
+          "text": "Interpretation: independent replication and follow-up studies would be needed before the approach is adopted more widely.",
+          "basis": "template"
+        }
+      }
+    },
+    {
+      "recordId": "doi-f012aad92cc8",
+      "rank": 2,
+      "analysis": {
+        "whatHappened": {
+          "text": "Ana Rivera, Chidi Okafor: “Deep learning prediction of antibody developability from sequence” — journal article in Journal of Synthetic Test Biology, published 2026-11-17.",
+          "basis": "metadata"
+        },
+        "whatWasDeveloped": {
+          "text": "We present a deep learning model that predicts monoclonal antibody aggregation from sequence.",
+          "basis": "source"
+        },
+        "whatIsNew": {
+          "text": "The model improved accuracy compared with existing tools.",
+          "basis": "source"
+        },
+        "whyImportant": {
+          "text": "General context (Immunotechnology): Engineered antibodies and immune cells are among the fastest-growing classes of biological medicines.",
+          "basis": "template"
+        },
+        "limitations": {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results. BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        },
+        "whatNext": {
+          "text": "Interpretation: independent replication and follow-up studies would be needed before the approach is adopted more widely.",
+          "basis": "template"
+        }
+      }
+    },
+    {
+      "recordId": "url-9c697bc0edba",
+      "rank": 3,
+      "analysis": {
+        "whatHappened": {
+          "text": "European Medicines Agency announced 2026-11-16: “New mRNA vaccine recommended for approval in the EU (TEST)”.",
+          "basis": "metadata"
+        },
+        "whatWasDeveloped": {
+          "text": "What was developed is not stated in the available source metadata.",
+          "basis": "unavailable"
+        },
+        "whatIsNew": {
+          "text": "A comparison with previous approaches is not stated in the available source metadata.",
+          "basis": "unavailable"
+        },
+        "whyImportant": {
+          "text": "General context (Vaccines & diagnostics): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
+          "basis": "template"
+        },
+        "limitations": {
+          "text": "Regulatory announcements reflect a decision or communication by the agency; read the original notice for scope and conditions.",
+          "basis": "template"
+        },
+        "whatNext": {
+          "text": "Interpretation: implementation depends on the conditions in the official notice; check the agency page for updates.",
+          "basis": "template"
+        }
+      }
+    }
+  ],
+  "records": [
+    {
+      "id": "doi-a3e8fdfa99b1",
+      "title": "[DEMO] Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor",
+      "authors": [
+        "Rivera A",
+        "Okafor C"
+      ],
+      "date": "2026-11-17",
+      "dateType": "published",
+      "source": {
+        "id": "europepmc",
+        "name": "Europe PMC"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-a3e8fdfa99b1",
+      "venue": "Journal of Synthetic Test Biology",
+      "identifiers": {
+        "doi": "10.5555/test.crispr.001",
+        "pmid": "99000001"
+      },
+      "categories": [
+        "crispr-genetic-engineering",
+        "biomaterials-nanobiotech"
+      ],
+      "evidence": "PEER-REVIEWED",
+      "evidenceNote": "Journal article indexed by a bibliographic database.",
+      "summary": {
+        "text": "We developed an engineered adenine base editor delivered by lipid nanoparticles.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 4.4
+    },
+    {
+      "id": "doi-f012aad92cc8",
+      "title": "[DEMO] Deep learning prediction of antibody developability from sequence",
+      "authors": [
+        "Ana Rivera",
+        "Chidi Okafor"
+      ],
+      "organization": "Test Institute of Biotechnology",
+      "date": "2026-11-17",
+      "dateType": "published",
+      "source": {
+        "id": "pubmed",
+        "name": "PubMed"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-f012aad92cc8",
+      "venue": "Journal of Synthetic Test Biology",
+      "identifiers": {
+        "doi": "10.5555/demo.99000015",
+        "pmid": "99000015"
+      },
+      "categories": [
+        "immunotechnology",
+        "ai-drug-discovery"
+      ],
+      "evidence": "PEER-REVIEWED",
+      "evidenceNote": "Journal article indexed by a bibliographic database.",
+      "articleTypes": [
+        "Journal Article"
+      ],
+      "summary": {
+        "text": "We present a deep learning model that predicts monoclonal antibody aggregation from sequence. The model improved accuracy compared with existing tools.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Immunotechnology): Engineered antibodies and immune cells are among the fastest-growing classes of biological medicines.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 4.4
+    },
+    {
+      "id": "doi-014de79d8f65",
+      "title": "[DEMO] Drought tolerant wheat generated by multiplex genome editing",
+      "authors": [
+        "Ana Rivera",
+        "Chidi Okafor"
+      ],
+      "organization": "Test Institute of Biotechnology",
+      "date": "2026-11-17",
+      "dateType": "published",
+      "source": {
+        "id": "pubmed",
+        "name": "PubMed"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-014de79d8f65",
+      "venue": "Journal of Synthetic Test Biology",
+      "identifiers": {
+        "doi": "10.5555/demo.99000016",
+        "pmid": "99000016"
+      },
+      "categories": [
+        "agricultural-biotech",
+        "crispr-genetic-engineering"
+      ],
+      "evidence": "PEER-REVIEWED",
+      "evidenceNote": "Journal article indexed by a bibliographic database.",
+      "articleTypes": [
+        "Journal Article"
+      ],
+      "summary": {
+        "text": "We generated drought tolerant wheat using multiplex CRISPR genome editing. Field validation remains to be performed.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Agricultural biotechnology): Agricultural biotechnology targets yield, resilience and nutrition in crops and livestock under changing climate conditions.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
+          "basis": "template"
+        },
+        {
+          "text": "Field validation remains to be performed.",
+          "basis": "source"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 4.4
+    },
+    {
+      "id": "doi-065f2319d5ee",
+      "title": "[DEMO] Continuous perfusion bioreactor process for monoclonal antibody manufacturing",
+      "authors": [
+        "Ana Rivera",
+        "Chidi Okafor"
+      ],
+      "organization": "Test Institute of Biotechnology",
+      "date": "2026-11-17",
+      "dateType": "published",
+      "source": {
+        "id": "pubmed",
+        "name": "PubMed"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-065f2319d5ee",
+      "venue": "Journal of Synthetic Test Biology",
+      "identifiers": {
+        "doi": "10.5555/demo.99000017",
+        "pmid": "99000017"
+      },
+      "categories": [
+        "immunotechnology",
+        "bioprocess-engineering"
+      ],
+      "evidence": "PEER-REVIEWED",
+      "evidenceNote": "Journal article indexed by a bibliographic database.",
+      "articleTypes": [
+        "Journal Article"
+      ],
+      "summary": {
+        "text": "We report a continuous perfusion bioprocess using CHO cells. Productivity improved compared with fed-batch culture.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Immunotechnology): Engineered antibodies and immune cells are among the fastest-growing classes of biological medicines.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 4.4
+    },
+    {
+      "id": "url-c895cffd1f8e",
+      "title": "[DEMO] FDA Approves First Gene Therapy for a Rare Inherited Disorder (TEST)",
+      "authors": [],
+      "organization": "U.S. Food and Drug Administration",
+      "date": "2026-11-18",
+      "dateType": "announced",
+      "source": {
+        "id": "fda",
+        "name": "U.S. FDA"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/url-c895cffd1f8e",
+      "venue": "FDA Press Releases",
+      "identifiers": {},
+      "categories": [
+        "crispr-genetic-engineering"
+      ],
+      "evidence": "REGULATORY UPDATE",
+      "evidenceNote": "Official regulator communication.",
+      "summary": {
+        "text": "The U.S. Food and Drug Administration approved a gene therapy using an AAV vector.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Regulatory announcements reflect a decision or communication by the agency; read the original notice for scope and conditions.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3.85
+    },
+    {
+      "id": "nct-09999901",
+      "title": "[DEMO] CAR-T Cell Therapy for Relapsed B-cell Lymphoma (TEST)",
+      "authors": [],
+      "organization": "Test Cell Therapeutics",
+      "date": "2026-11-17",
+      "dateType": "first-posted",
+      "source": {
+        "id": "clinicaltrials",
+        "name": "ClinicalTrials.gov"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/nct-09999901",
+      "venue": "ClinicalTrials.gov registry",
+      "identifiers": {
+        "nct": "NCT09999901"
+      },
+      "categories": [
+        "immunotechnology",
+        "stem-cells-regenerative"
+      ],
+      "evidence": "CLINICAL TRIAL",
+      "evidenceNote": "Trial registration — describes a study, not its results.",
+      "summary": {
+        "text": "This study evaluates an autologous CAR-T cell therapy in adults with relapsed lymphoma.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Immunotechnology): Engineered antibodies and immune cells are among the fastest-growing classes of biological medicines.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "A registration describes a planned or ongoing study. It does not report results unless results are explicitly posted.",
+          "basis": "template"
+        },
+        {
+          "text": "Registry status: Not yet recruiting. No results are implied by registration.",
+          "basis": "metadata"
+        }
+      ],
+      "trial": {
+        "phase": [
+          "Phase 1"
+        ],
+        "status": "Not yet recruiting",
+        "conditions": [
+          "B-cell Lymphoma"
+        ],
+        "interventions": [
+          "TEST-CAR19 (Biological)"
+        ],
+        "sponsor": "Test Cell Therapeutics",
+        "primaryCompletion": "2028-06",
+        "studyType": "Interventional"
+      },
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3.8
+    },
+    {
+      "id": "url-9c697bc0edba",
+      "title": "[DEMO] New mRNA vaccine recommended for approval in the EU (TEST)",
+      "authors": [],
+      "organization": "European Medicines Agency",
+      "date": "2026-11-16",
+      "dateType": "announced",
+      "source": {
+        "id": "ema",
+        "name": "European Medicines Agency"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/url-9c697bc0edba",
+      "venue": "EMA News and press releases",
+      "identifiers": {},
+      "categories": [
+        "vaccines-diagnostics"
+      ],
+      "evidence": "REGULATORY UPDATE",
+      "evidenceNote": "Official regulator communication.",
+      "summary": {
+        "text": "EMA's human medicines committee recommended an mRNA vaccine.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Vaccines & diagnostics): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Regulatory announcements reflect a decision or communication by the agency; read the original notice for scope and conditions.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3.65
+    },
+    {
+      "id": "doi-792ef1587bc9",
+      "title": "[DEMO] Single-cell multi-omics atlas of engineered T cells during expansion",
+      "authors": [
+        "M. Garcia",
+        "H. Ito"
+      ],
+      "organization": "Demo Institute",
+      "date": "2026-11-17",
+      "dateType": "posted",
+      "source": {
+        "id": "biorxiv",
+        "name": "bioRxiv"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-792ef1587bc9",
+      "venue": "bioRxiv (preprint)",
+      "identifiers": {
+        "doi": "10.5555/demo.rxiv.11"
+      },
+      "categories": [
+        "bioinformatics",
+        "molecular-biology",
+        "immunotechnology"
+      ],
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "articleTypes": [
+        "new results"
+      ],
+      "summary": {
+        "text": "We present a single-cell RNA sequencing atlas of CAR-T cells. Further validation is required.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Bioinformatics): Bioinformatics turns large biological datasets into testable hypotheses and is central to modern biology.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "Further validation is required.",
+          "basis": "source"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3.15
+    },
+    {
+      "id": "doi-be60fe058a16",
+      "title": "[DEMO] A synthetic genetic circuit for programmable cell-free biosensors",
+      "authors": [
+        "J. Smith",
+        "R. K. Patel"
+      ],
+      "organization": "Test University",
+      "date": "2026-11-17",
+      "dateType": "posted",
+      "source": {
+        "id": "biorxiv",
+        "name": "bioRxiv"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-be60fe058a16",
+      "venue": "bioRxiv (preprint)",
+      "identifiers": {
+        "doi": "10.5555/test.biorxiv.001"
+      },
+      "categories": [
+        "synthetic-biology",
+        "biosensors"
+      ],
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "articleTypes": [
+        "new results"
+      ],
+      "summary": {
+        "text": "We engineered a genetic circuit for cell-free biosensing. This is the first demonstration of this design.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Synthetic biology): Synthetic biology applies engineering design to living systems, enabling programmable cells and new bio-based products.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3
+    },
+    {
+      "id": "doi-bda882649ce6",
+      "title": "[DEMO] Machine learning guided protein design of thermostable enzymes for industrial biocatalysis",
+      "authors": [
+        "Chen L",
+        "Novak P"
+      ],
+      "date": "2026-11-16",
+      "dateType": "posted",
+      "source": {
+        "id": "europepmc",
+        "name": "Europe PMC"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-bda882649ce6",
+      "venue": "Research Square",
+      "identifiers": {
+        "doi": "10.5555/test.preprint.epmc"
+      },
+      "categories": [
+        "ai-drug-discovery",
+        "protein-engineering",
+        "industrial-biotech"
+      ],
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "summary": {
+        "text": "We present a deep learning model for enzyme engineering.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (AI-assisted drug discovery): AI methods are being used to propose drug candidates and protein designs faster, but predictions still require experimental validation.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 2.95
+    },
+    {
+      "id": "doi-e3c26ff98d92",
+      "title": "[DEMO] De novo designed protein binders neutralise a model toxin",
+      "authors": [
+        "M. Garcia",
+        "H. Ito"
+      ],
+      "organization": "Demo Institute",
+      "date": "2026-11-17",
+      "dateType": "posted",
+      "source": {
+        "id": "biorxiv",
+        "name": "bioRxiv"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-e3c26ff98d92",
+      "venue": "bioRxiv (preprint)",
+      "identifiers": {
+        "doi": "10.5555/demo.rxiv.10"
+      },
+      "categories": [
+        "protein-engineering"
+      ],
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "articleTypes": [
+        "new results"
+      ],
+      "summary": {
+        "text": "We designed de novo protein binders with directed evolution refinement. This is the first design approach of its kind for this toxin.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Protein engineering): Engineered proteins and enzymes are the working parts of many biotech products, from therapeutics to industrial catalysts.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 2.85
+    },
+    {
+      "id": "pat-ep4999001a1",
+      "title": "[DEMO] Engineered Cas nuclease variants with reduced off-target activity",
+      "authors": [],
+      "organization": "TEST BIO GMBH",
+      "date": "2026-11-11",
+      "dateType": "published",
+      "source": {
+        "id": "epo",
+        "name": "EPO Open Patent Services"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/pat-ep4999001a1",
+      "venue": "Espacenet / EPO OPS",
+      "identifiers": {
+        "patentNumber": "EP4999001A1"
+      },
+      "categories": [
+        "patents-inventions",
+        "crispr-genetic-engineering",
+        "molecular-biology"
+      ],
+      "evidence": "PATENT APPLICATION",
+      "evidenceNote": "Patent application (kind A1). Not evidence of efficacy.",
+      "summary": {
+        "text": "The invention relates to engineered CRISPR Cas nuclease variants.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "A patent filing describes claimed inventions. It is not evidence of efficacy, safety, regulatory approval or commercial success.",
+          "basis": "template"
+        },
+        {
+          "text": "Published application (kind A1): claims are unexamined or under examination and may be narrowed or refused.",
+          "basis": "metadata"
+        }
+      ],
+      "patent": {
+        "kind": "A1",
+        "status": "application",
+        "applicants": [
+          "TEST BIO GMBH"
+        ],
+        "cpc": [
+          "C12N15"
+        ]
+      },
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 2.35
+    }
+  ],
+  "stats": {
+    "total": 12,
+    "byEvidence": {
+      "PEER-REVIEWED": 4,
+      "REGULATORY UPDATE": 2,
+      "CLINICAL TRIAL": 1,
+      "PREPRINT": 4,
+      "PATENT APPLICATION": 1
+    },
+    "byCategory": {
+      "crispr-genetic-engineering": 4,
+      "biomaterials-nanobiotech": 1,
+      "immunotechnology": 4,
+      "ai-drug-discovery": 2,
+      "agricultural-biotech": 1,
+      "bioprocess-engineering": 1,
+      "stem-cells-regenerative": 1,
+      "vaccines-diagnostics": 1,
+      "bioinformatics": 1,
+      "molecular-biology": 2,
+      "synthetic-biology": 1,
+      "biosensors": 1,
+      "protein-engineering": 2,
+      "industrial-biotech": 1,
+      "patents-inventions": 1
+    },
+    "bySource": {
+      "europepmc": 2,
+      "pubmed": 3,
+      "fda": 1,
+      "clinicaltrials": 1,
+      "ema": 1,
+      "biorxiv": 3,
+      "epo": 1
+    }
+  },
+  "sources": [
+    {
+      "id": "pubmed",
+      "name": "PubMed (NCBI E-utilities)",
+      "status": "ok",
+      "fetched": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "durationMs": 4
+    },
+    {
+      "id": "europepmc",
+      "name": "Europe PMC",
+      "status": "ok",
+      "fetched": 2,
+      "accepted": 2,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "biorxiv",
+      "name": "bioRxiv",
+      "status": "ok",
+      "fetched": 3,
+      "accepted": 3,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "medrxiv",
+      "name": "medRxiv",
+      "status": "empty",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "clinicaltrials",
+      "name": "ClinicalTrials.gov",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "fda",
+      "name": "U.S. FDA (official RSS)",
+      "status": "ok",
+      "fetched": 3,
+      "accepted": 1,
+      "rejected": 2,
+      "durationMs": 2,
+      "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items"
+    },
+    {
+      "id": "ema",
+      "name": "European Medicines Agency (official RSS)",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "epo",
+      "name": "EPO Open Patent Services",
+      "status": "ok",
+      "fetched": 1,
+      "accepted": 1,
+      "rejected": 0,
+      "durationMs": 2
+    },
+    {
+      "id": "company",
+      "name": "Company announcements (configured feeds)",
+      "status": "skipped",
+      "fetched": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "durationMs": 0,
+      "note": "no company feeds configured (BIOPULSE_COMPANY_FEEDS)"
+    }
+  ],
+  "rejected": {
+    "count": 2,
+    "reasons": {
+      "url-host-not-allowed": 1,
+      "not-biotech-relevant": 1
+    }
+  },
+  "ai": {
+    "enabled": false,
+    "used": false,
+    "note": "AI summarisation disabled (no ANTHROPIC_API_KEY configured); deterministic summaries used."
+  },
+  "notice": "DEMONSTRATION DATA — fictional records generated from synthetic test fixtures for development. This is not real or current research."
+}
