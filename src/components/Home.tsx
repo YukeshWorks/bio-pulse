@@ -96,6 +96,8 @@ export function BriefingHero({ data }: { data: DailyDataset }) {
             <p className="mt-4 flex flex-wrap items-center gap-2 text-[11px] text-fg-subtle">
               <BasisLabel basis={data.briefing.method === 'ai' ? 'ai' : 'metadata'} />
               {data.briefing.note}
+              <span aria-hidden>·</span>
+              <AiStatus ai={data.ai} />
             </p>
           </>
         ) : (
@@ -192,5 +194,72 @@ export function CategoryNav({ counts }: { counts: Record<string, number> }) {
         </Link>
       ))}
     </div>
+  );
+}
+
+/**
+ * Partial-coverage warning: lists source families that failed, were skipped or contributed nothing
+ * today, so readers know what the day's picture does NOT include.
+ */
+export function CoverageBanner({ data }: { data: DailyDataset }) {
+  const missing = data.sources.filter((s) => s.status === 'failed' || s.status === 'skipped' || s.accepted === 0);
+  if (missing.length === 0) return null;
+  const why = (s: DailyDataset['sources'][number]) =>
+    s.status === 'failed'
+      ? 'failed'
+      : s.status === 'skipped'
+        ? 'not configured'
+        : s.fetched === 0
+          ? 'no new items'
+          : s.capped
+            ? 'cut by daily cap'
+            : s.rejectReasons
+              ? 'none passed checks'
+              : 'none published'; // v1 status files do not record why
+  return (
+    <div className="rounded-xl border border-ink-600 bg-ink-850/70 px-4 py-3 text-xs text-fg-muted" role="note">
+      <span className="font-semibold text-fg">Coverage incomplete today.</span> No records from:{' '}
+      {missing.map((s, i) => (
+        <span key={s.id}>
+          {i > 0 && ', '}
+          {s.name} <span className="text-fg-subtle">({why(s)})</span>
+        </span>
+      ))}
+      .{' '}
+      <Link to="/about#source-status" className="link">
+        Source health
+      </Link>
+    </div>
+  );
+}
+
+export function VerificationLine({ data }: { data: DailyDataset }) {
+  const v = data.verificationSummary;
+  if (!v) return <p className="mt-3 text-xs text-fg-subtle">{data.stats.total} records passed metadata validation (official host, HTTPS, identifiers, dates).</p>;
+  return (
+    <p className="mt-3 text-xs text-fg-subtle" title="Metadata validation and link checks confirm that a record and its link are genuine. They do not verify the scientific claims.">
+      {v.collected} collected → {v.metadataValidated} passed metadata validation → {v.published} published · links live-checked: {v.linkOk} ok
+      {v.linkRestricted ? `, ${v.linkRestricted} restricted` : ''}, {v.linkNotChecked} not checked. Checks confirm records and links, not scientific claims.
+    </p>
+  );
+}
+
+const AI_LABEL: Record<string, string> = {
+  disabled: 'AI off (no API key) — deterministic text',
+  'not-needed': 'AI not needed',
+  used: 'AI used',
+  partial: 'AI used; some fields replaced by deterministic text after failing validation',
+  fallback: 'AI output rejected — deterministic text used',
+  failed: 'AI request failed — deterministic text used',
+};
+
+export function AiStatus({ ai }: { ai: DailyDataset['ai'] }) {
+  const status = ai.status ?? (ai.used ? 'used' : ai.enabled ? 'fallback' : 'disabled');
+  return (
+    <span className="text-[11px] text-fg-subtle" title={ai.note}>
+      {AI_LABEL[status]}
+      {ai.model && status !== 'disabled' ? ` · ${ai.model}` : ''}
+      {ai.failure ? ` · ${ai.failure}` : ''}
+    </span>
   );
 }

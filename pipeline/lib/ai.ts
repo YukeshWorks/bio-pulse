@@ -37,6 +37,9 @@ export interface AiResult {
   summaries: Map<string, { summary: AttributedText; whyItMatters: AttributedText }>;
   note: string;
   used: boolean;
+  status: 'disabled' | 'used' | 'partial' | 'fallback' | 'failed' | 'not-needed';
+  /** Safe failure category only (never response bodies or secrets). */
+  failure?: string;
 }
 
 const AiOutputSchema = z.object({
@@ -104,7 +107,7 @@ export function toAiInput(r: BioRecord, abstract: string | undefined): AiInputRe
   };
 }
 
-export function validateAiOutput(out: AiOutput, input: AiInputRecord[], topIds: string[]): Omit<AiResult, 'note' | 'used'> & { rejected: string[] } {
+export function validateAiOutput(out: AiOutput, input: AiInputRecord[], topIds: string[]): Pick<AiResult, 'briefing' | 'analyses' | 'summaries'> & { rejected: string[] } {
   const corpus = JSON.stringify(input);
   const ids = new Set(input.map((r) => r.id));
   const rejected: string[] = [];
@@ -185,21 +188,35 @@ export async function runAi(
   abstracts: Map<string, string | undefined>,
   caller: AiCaller = claudeCaller,
 ): Promise<AiResult> {
-  const empty: AiResult = { analyses: new Map(), summaries: new Map(), note: '', used: false };
+  const empty: AiResult = { analyses: new Map(), summaries: new Map(), note: '', used: false, status: 'disabled' };
   if (!config.enabled) return { ...empty, note: 'AI summarisation disabled (no ANTHROPIC_API_KEY configured); deterministic summaries used.' };
-  if (top.length === 0) return { ...empty, note: 'AI not used: no qualifying records.' };
+  if (top.length === 0) return { ...empty, status: 'not-needed', note: 'AI not used: no qualifying records.' };
 
   const recs = [...new Map([...top, ...candidates].map((r) => [r.id, r])).values()].slice(0, config.maxRecords);
   const input = recs.map((r) => toAiInput(r, abstracts.get(r.id)));
   const user = `Records (JSON):\n${JSON.stringify(input)}\n\nTasks:\n1. Write the briefing sentence about today's biotechnology developments.\n2. For these top discovery IDs, answer the five questions: ${top.map((t) => t.id).join(', ')}.\n3. Write a summary and why_it_matters for every supplied record.`;
   try {
     const out = await caller(SYSTEM_PROMPT, user, config);
-    if (!out) return { ...empty, note: 'AI response was refused, truncated or unparseable; deterministic summaries used.' };
+    if (!out) return { ...empty, status: 'fallback', failure: 'refused-truncated-or-unparseable', note: 'AI response was refused, truncated or unparseable; deterministic summaries used.' };
     const v = validateAiOutput(out, input, top.map((t) => t.id));
-    const note = `AI summaries generated with ${config.model} from supplied metadata/abstracts only.${v.rejected.length ? ` ${v.rejected.length} AI field(s) failed validation and were replaced with deterministic text.` : ''}`;
-    return { briefing: v.briefing, analyses: v.analyses, summaries: v.summaries, note, used: true };
+    const note = `AI text generated with ${config.model} from supplied metadata and abstracts only (not full texts).${v.rejected.length ? ` ${v.rejected.length} AI field(s) failed validation and were replaced with deterministic text.` : ''}`;
+    const anyAccepted = Boolean(v.briefing) || v.analyses.size > 0 || v.summaries.size > 0;
+    if (!anyAccepted) return { ...empty, status: 'fallback', failure: 'all-fields-failed-validation', note: 'All AI output failed validation; deterministic summaries used.' };
+    return { briefing: v.briefing, analyses: v.analyses, summaries: v.summaries, note, used: true, status: v.rejected.length ? 'partial' : 'used' };
   } catch (err) {
-    const msg = err instanceof Error ? err.message.split('\n')[0].slice(0, 200) : 'unknown error';
-    return { ...empty, note: `AI request failed (${msg}); deterministic summaries used.` };
+    const failure = aiFailureCategory(err);
+    return { ...empty, status: 'failed', failure, note: `AI request failed (${failure}); deterministic summaries used.` };
   }
+}
+
+/** Map an error to a coarse, non-sensitive category for public status files. */
+export function aiFailureCategory(err: unknown): string {
+  if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) return 'authentication';
+  if (err instanceof Anthropic.RateLimitError) return 'rate-limited';
+  if (err instanceof Anthropic.APIConnectionTimeoutError) return 'timeout';
+  if (err instanceof Anthropic.APIConnectionError) return 'network';
+  if (err instanceof Anthropic.BadRequestError || err instanceof Anthropic.NotFoundError) return 'invalid-request';
+  if (err instanceof Anthropic.InternalServerError) return 'server-error';
+  if (err instanceof Anthropic.APIError) return `api-error${typeof err.status === 'number' ? `-${err.status}` : ''}`;
+  return 'unexpected-error';
 }

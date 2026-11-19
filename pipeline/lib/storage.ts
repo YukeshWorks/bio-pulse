@@ -4,10 +4,10 @@ import type { ZodType } from 'zod';
 import { ArchiveIndexSchema, DailyDatasetSchema, RunStatusSchema, type ArchiveIndex, type DailyDataset, type RunStatus } from '../../shared/schema';
 
 /** Write JSON atomically (temp file + rename) so a crash never leaves a half-written file. */
-export async function writeJsonAtomic(file: string, data: unknown): Promise<void> {
+export async function writeJsonAtomic(file: string, data: unknown, opts: { compact?: boolean } = {}): Promise<void> {
   await fs.mkdir(path.dirname(file), { recursive: true });
   const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
-  await fs.writeFile(tmp, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+  await fs.writeFile(tmp, `${opts.compact ? JSON.stringify(data) : JSON.stringify(data, null, 2)}\n`, 'utf8');
   await fs.rename(tmp, file);
 }
 

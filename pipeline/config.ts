@@ -62,7 +62,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     maxRecordsPerDay: intEnv(env, 'BIOPULSE_MAX_RECORDS', 200),
     pubmedPerCategory: intEnv(env, 'BIOPULSE_PUBMED_PER_CATEGORY', 12),
     europePmcMax: intEnv(env, 'BIOPULSE_EUROPEPMC_MAX', 150),
-    preprintMaxPages: intEnv(env, 'BIOPULSE_PREPRINT_MAX_PAGES', 10),
+    preprintMaxPages: intEnv(env, 'BIOPULSE_PREPRINT_MAX_PAGES', 20),
     trialsMax: intEnv(env, 'BIOPULSE_TRIALS_MAX', 100),
     verifyUrls: boolEnv(env, 'BIOPULSE_VERIFY_URLS', true),
     verifyUrlLimit: intEnv(env, 'BIOPULSE_VERIFY_URL_LIMIT', 60),

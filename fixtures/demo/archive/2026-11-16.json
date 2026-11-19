@@ -9,8 +9,8 @@
     "to": "2026-11-16"
   },
   "briefing": {
-    "sentence": "Genetic engineering & CRISPR led today's 12 verified biotech updates, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor”.",
-    "wordCount": 30,
+    "sentence": "Protein engineering led today's 11 new biotech records, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor”.",
+    "wordCount": 28,
     "citations": [
       "doi-a3e8fdfa99b1"
     ],
@@ -35,7 +35,7 @@
           "basis": "unavailable"
         },
         "whyImportant": {
-          "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+          "text": "General context (Genetic engineering & CRISPR; matched: crispr, base edit): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
           "basis": "template"
         },
         "limitations": {
@@ -49,38 +49,8 @@
       }
     },
     {
-      "recordId": "doi-d351e2b88ec4",
-      "rank": 2,
-      "analysis": {
-        "whatHappened": {
-          "text": "Ana Rivera, Chidi Okafor: “A wearable aptamer biosensor for continuous cortisol monitoring in sweat” — journal article in Journal of Synthetic Test Biology, published 2026-11-16.",
-          "basis": "metadata"
-        },
-        "whatWasDeveloped": {
-          "text": "Here we describe an electrochemical aptamer biosensor integrated in a wearable patch.",
-          "basis": "source"
-        },
-        "whatIsNew": {
-          "text": "The sensor outperformed a commercial immunoassay in a pilot study of 12 volunteers.",
-          "basis": "source"
-        },
-        "whyImportant": {
-          "text": "General context (Biosensors): Biosensors translate biological signals into measurable outputs for monitoring health, food and the environment.",
-          "basis": "template"
-        },
-        "limitations": {
-          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results. BioPulse summarises the abstract only; the full text, methods and data were not reviewed. The abstract notes: “The sensor outperformed a commercial immunoassay in a pilot study of 12 volunteers.”",
-          "basis": "template"
-        },
-        "whatNext": {
-          "text": "Interpretation: independent replication and follow-up studies would be needed before the approach is adopted more widely.",
-          "basis": "template"
-        }
-      }
-    },
-    {
       "recordId": "url-9c697bc0edba",
-      "rank": 3,
+      "rank": 2,
       "analysis": {
         "whatHappened": {
           "text": "European Medicines Agency announced 2026-11-16: “New mRNA vaccine recommended for approval in the EU (TEST)”.",
@@ -95,7 +65,7 @@
           "basis": "unavailable"
         },
         "whyImportant": {
-          "text": "General context (Vaccines & diagnostics): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
+          "text": "General context (Vaccines & diagnostics; matched: vaccin, mrna vaccine): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
           "basis": "template"
         },
         "limitations": {
@@ -104,6 +74,36 @@
         },
         "whatNext": {
           "text": "Interpretation: implementation depends on the conditions in the official notice; check the agency page for updates.",
+          "basis": "template"
+        }
+      }
+    },
+    {
+      "recordId": "doi-fb27b6f6e7d9",
+      "rank": 3,
+      "analysis": {
+        "whatHappened": {
+          "text": "Ana Rivera, Chidi Okafor: “Engineered mesenchymal stem cell organoids accelerate cartilage regeneration in a rat defect model” — journal article in Journal of Synthetic Test Biology, published 2026-11-16.",
+          "basis": "metadata"
+        },
+        "whatWasDeveloped": {
+          "text": "We engineered organoids from induced pluripotent stem cells.",
+          "basis": "source"
+        },
+        "whatIsNew": {
+          "text": "The regenerated tissue improved compared with untreated controls.",
+          "basis": "source"
+        },
+        "whyImportant": {
+          "text": "General context (Stem cells & regenerative medicine; matched: stem cell, pluripoten, organoid): Stem-cell and organoid technologies aim to replace damaged tissue and provide more human-relevant disease models.",
+          "basis": "template"
+        },
+        "limitations": {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results. BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        },
+        "whatNext": {
+          "text": "Interpretation: independent replication and follow-up studies would be needed before the approach is adopted more widely.",
           "basis": "template"
         }
       }
@@ -131,9 +131,22 @@
         "pmid": "99000001"
       },
       "categories": [
-        "crispr-genetic-engineering",
-        "biomaterials-nanobiotech"
+        "crispr-genetic-engineering"
       ],
+      "classification": {
+        "primary": "crispr-genetic-engineering",
+        "confidence": "high",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "crispr-genetic-engineering": {
+            "score": 4,
+            "terms": [
+              "crispr",
+              "base edit"
+            ]
+          }
+        }
+      },
       "evidence": "PEER-REVIEWED",
       "evidenceNote": "Journal article indexed by a bibliographic database.",
       "summary": {
@@ -141,7 +154,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+        "text": "General context (Genetic engineering & CRISPR; matched: crispr, base edit): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
         "basis": "template"
       },
       "limitations": [
@@ -167,7 +180,84 @@
           "identifier-consistency"
         ]
       },
-      "score": 4.4
+      "score": 4.25
+    },
+    {
+      "id": "doi-fb27b6f6e7d9",
+      "title": "[DEMO] Engineered mesenchymal stem cell organoids accelerate cartilage regeneration in a rat defect model",
+      "authors": [
+        "Ana Rivera",
+        "Chidi Okafor"
+      ],
+      "organization": "Test Institute of Biotechnology",
+      "date": "2026-11-16",
+      "dateType": "published",
+      "source": {
+        "id": "pubmed",
+        "name": "PubMed"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-fb27b6f6e7d9",
+      "venue": "Journal of Synthetic Test Biology",
+      "identifiers": {
+        "doi": "10.5555/demo.99000011",
+        "pmid": "99000011"
+      },
+      "categories": [
+        "stem-cells-regenerative"
+      ],
+      "classification": {
+        "primary": "stem-cells-regenerative",
+        "confidence": "high",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "stem-cells-regenerative": {
+            "score": 5,
+            "terms": [
+              "stem cell",
+              "pluripoten",
+              "organoid"
+            ]
+          }
+        }
+      },
+      "evidence": "PEER-REVIEWED",
+      "evidenceNote": "Journal article indexed by a bibliographic database.",
+      "articleTypes": [
+        "Journal Article"
+      ],
+      "summary": {
+        "text": "We engineered organoids from induced pluripotent stem cells. The regenerated tissue improved compared with untreated controls. Results are limited to a rodent model.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Stem cells & regenerative medicine; matched: stem cell, pluripoten, organoid): Stem-cell and organoid technologies aim to replace damaged tissue and provide more human-relevant disease models.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 4.25
     },
     {
       "id": "doi-d351e2b88ec4",
@@ -191,9 +281,24 @@
         "pmid": "99000012"
       },
       "categories": [
-        "biosensors",
-        "immunotechnology"
+        "biosensors"
       ],
+      "classification": {
+        "primary": "biosensors",
+        "confidence": "high",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "biosensors": {
+            "score": 5.5,
+            "terms": [
+              "biosensor",
+              "aptamer",
+              "sensor",
+              "wearable"
+            ]
+          }
+        }
+      },
       "evidence": "PEER-REVIEWED",
       "evidenceNote": "Journal article indexed by a bibliographic database.",
       "articleTypes": [
@@ -204,7 +309,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Biosensors): Biosensors translate biological signals into measurable outputs for monitoring health, food and the environment.",
+        "text": "General context (Biosensors; matched: biosensor, aptamer, sensor): Biosensors translate biological signals into measurable outputs for monitoring health, food and the environment.",
         "basis": "template"
       },
       "limitations": [
@@ -234,7 +339,7 @@
           "identifier-consistency"
         ]
       },
-      "score": 4.4
+      "score": 4.25
     },
     {
       "id": "doi-8a6be5bfe65c",
@@ -258,9 +363,22 @@
         "pmid": "99000013"
       },
       "categories": [
-        "industrial-biotech",
-        "bioprocess-engineering"
+        "industrial-biotech"
       ],
+      "classification": {
+        "primary": "industrial-biotech",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "industrial-biotech": {
+            "score": 3,
+            "terms": [
+              "precision fermentation",
+              "fermentation"
+            ]
+          }
+        }
+      },
       "evidence": "PEER-REVIEWED",
       "evidenceNote": "Journal article indexed by a bibliographic database.",
       "articleTypes": [
@@ -271,136 +389,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Industrial biotechnology): Industrial biotechnology replaces chemical processes with biological ones to make fuels, materials and chemicals.",
-        "basis": "template"
-      },
-      "limitations": [
-        {
-          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
-          "basis": "template"
-        },
-        {
-          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
-          "basis": "template"
-        }
-      ],
-      "verification": {
-        "urlFormatValid": true,
-        "urlHostAllowed": true,
-        "urlCheck": "unchecked",
-        "identifierConsistent": true,
-        "dateValid": true,
-        "checks": [
-          "url-format",
-          "url-host",
-          "date",
-          "identifier-consistency"
-        ]
-      },
-      "score": 4.4
-    },
-    {
-      "id": "doi-cba383731585",
-      "title": "[DEMO] Microbial consortia degrade polyethylene terephthalate under ambient conditions",
-      "authors": [
-        "Ana Rivera",
-        "Chidi Okafor"
-      ],
-      "organization": "Test Institute of Biotechnology",
-      "date": "2026-11-16",
-      "dateType": "published",
-      "source": {
-        "id": "pubmed",
-        "name": "PubMed"
-      },
-      "alsoIndexedIn": [],
-      "url": "https://example.org/biopulse-demo/doi-cba383731585",
-      "venue": "Journal of Synthetic Test Biology",
-      "identifiers": {
-        "doi": "10.5555/demo.99000014",
-        "pmid": "99000014"
-      },
-      "categories": [
-        "environmental-biotech",
-        "microbiology"
-      ],
-      "evidence": "PEER-REVIEWED",
-      "evidenceNote": "Journal article indexed by a bibliographic database.",
-      "articleTypes": [
-        "Journal Article"
-      ],
-      "summary": {
-        "text": "We identified a bacterial consortium capable of PET biodegradation. Degradation was preliminary and measured over 30 days in vitro.",
-        "basis": "source"
-      },
-      "whyItMatters": {
-        "text": "General context (Environmental biotechnology): Environmental biotechnology uses organisms and enzymes to clean pollution, recycle waste and capture carbon.",
-        "basis": "template"
-      },
-      "limitations": [
-        {
-          "text": "Journal indexing indicates editorial review; BioPulse does not independently verify the review process or reproduce results.",
-          "basis": "template"
-        },
-        {
-          "text": "Degradation was preliminary and measured over 30 days in vitro.",
-          "basis": "source"
-        },
-        {
-          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
-          "basis": "template"
-        }
-      ],
-      "verification": {
-        "urlFormatValid": true,
-        "urlHostAllowed": true,
-        "urlCheck": "unchecked",
-        "identifierConsistent": true,
-        "dateValid": true,
-        "checks": [
-          "url-format",
-          "url-host",
-          "date",
-          "identifier-consistency"
-        ]
-      },
-      "score": 4.4
-    },
-    {
-      "id": "doi-fb27b6f6e7d9",
-      "title": "[DEMO] Engineered mesenchymal stem cell organoids accelerate cartilage regeneration in a rat defect model",
-      "authors": [
-        "Ana Rivera",
-        "Chidi Okafor"
-      ],
-      "organization": "Test Institute of Biotechnology",
-      "date": "2026-11-16",
-      "dateType": "published",
-      "source": {
-        "id": "pubmed",
-        "name": "PubMed"
-      },
-      "alsoIndexedIn": [],
-      "url": "https://example.org/biopulse-demo/doi-fb27b6f6e7d9",
-      "venue": "Journal of Synthetic Test Biology",
-      "identifiers": {
-        "doi": "10.5555/demo.99000011",
-        "pmid": "99000011"
-      },
-      "categories": [
-        "stem-cells-regenerative"
-      ],
-      "evidence": "PEER-REVIEWED",
-      "evidenceNote": "Journal article indexed by a bibliographic database.",
-      "articleTypes": [
-        "Journal Article"
-      ],
-      "summary": {
-        "text": "We engineered organoids from induced pluripotent stem cells. The regenerated tissue improved compared with untreated controls. Results are limited to a rodent model.",
-        "basis": "source"
-      },
-      "whyItMatters": {
-        "text": "General context (Stem cells & regenerative medicine): Stem-cell and organoid technologies aim to replace damaged tissue and provide more human-relevant disease models.",
+        "text": "General context (Industrial biotechnology; matched: precision fermentation, fermentation): Industrial biotechnology replaces chemical processes with biological ones to make fuels, materials and chemicals.",
         "basis": "template"
       },
       "limitations": [
@@ -446,6 +435,20 @@
       "categories": [
         "vaccines-diagnostics"
       ],
+      "classification": {
+        "primary": "vaccines-diagnostics",
+        "confidence": "high",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "vaccines-diagnostics": {
+            "score": 4,
+            "terms": [
+              "vaccin",
+              "mrna vaccine"
+            ]
+          }
+        }
+      },
       "evidence": "REGULATORY UPDATE",
       "evidenceNote": "Official regulator communication.",
       "summary": {
@@ -453,7 +456,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Vaccines & diagnostics): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
+        "text": "General context (Vaccines & diagnostics; matched: vaccin, mrna vaccine): Vaccines and diagnostics determine how quickly health systems can detect and prevent disease.",
         "basis": "template"
       },
       "limitations": [
@@ -478,6 +481,165 @@
       "score": 3.85
     },
     {
+      "id": "doi-bda882649ce6",
+      "title": "[DEMO] Machine learning guided protein design of thermostable enzymes for industrial biocatalysis",
+      "authors": [
+        "Chen L",
+        "Novak P"
+      ],
+      "date": "2026-11-16",
+      "dateType": "posted",
+      "source": {
+        "id": "europepmc",
+        "name": "Europe PMC"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-bda882649ce6",
+      "venue": "Research Square",
+      "identifiers": {
+        "doi": "10.5555/test.preprint.epmc"
+      },
+      "categories": [
+        "protein-engineering",
+        "industrial-biotech"
+      ],
+      "classification": {
+        "primary": "protein-engineering",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "protein-engineering": {
+            "score": 3,
+            "terms": [
+              "protein design",
+              "enzyme engineer"
+            ]
+          },
+          "industrial-biotech": {
+            "score": 2,
+            "terms": [
+              "biocatal"
+            ]
+          }
+        }
+      },
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "summary": {
+        "text": "We present a deep learning model for enzyme engineering.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Protein engineering; matched: protein design, enzyme engineer): Engineered proteins and enzymes are the working parts of many biotech products, from therapeutics to industrial catalysts.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3
+    },
+    {
+      "id": "doi-be60fe058a16",
+      "title": "[DEMO] A synthetic genetic circuit for programmable cell-free biosensors",
+      "authors": [
+        "J. Smith",
+        "R. K. Patel"
+      ],
+      "organization": "Test University",
+      "date": "2026-11-16",
+      "dateType": "posted",
+      "source": {
+        "id": "biorxiv",
+        "name": "bioRxiv"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-be60fe058a16",
+      "venue": "bioRxiv (preprint)",
+      "identifiers": {
+        "doi": "10.5555/test.biorxiv.001"
+      },
+      "categories": [
+        "synthetic-biology",
+        "biosensors"
+      ],
+      "classification": {
+        "primary": "synthetic-biology",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "synthetic-biology": {
+            "score": 2.5,
+            "terms": [
+              "genetic circuit"
+            ]
+          },
+          "biosensors": {
+            "score": 2,
+            "terms": [
+              "biosensor"
+            ]
+          }
+        }
+      },
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "articleTypes": [
+        "new results"
+      ],
+      "summary": {
+        "text": "We engineered a genetic circuit for cell-free biosensing. This is the first demonstration of this design.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Synthetic biology; matched: genetic circuit): Synthetic biology applies engineering design to living systems, enabling programmable cells and new bio-based products.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 3
+    },
+    {
       "id": "nct-09999901",
       "title": "[DEMO] CAR-T Cell Therapy for Relapsed B-cell Lymphoma (TEST)",
       "authors": [],
@@ -498,6 +660,25 @@
         "immunotechnology",
         "stem-cells-regenerative"
       ],
+      "classification": {
+        "primary": "immunotechnology",
+        "confidence": "low",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "immunotechnology": {
+            "score": 2,
+            "terms": [
+              "car-t"
+            ]
+          },
+          "stem-cells-regenerative": {
+            "score": 2,
+            "terms": [
+              "cell therap"
+            ]
+          }
+        }
+      },
       "evidence": "CLINICAL TRIAL",
       "evidenceNote": "Trial registration — describes a study, not its results.",
       "summary": {
@@ -505,7 +686,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Immunotechnology): Engineered antibodies and immune cells are among the fastest-growing classes of biological medicines.",
+        "text": "General context: this record matched BioPulse’s biotechnology keywords only weakly, so no field-specific significance is stated. See the original source for its relevance.",
         "basis": "template"
       },
       "limitations": [
@@ -546,194 +727,6 @@
           "identifier-consistency"
         ]
       },
-      "score": 3.8
-    },
-    {
-      "id": "doi-bda882649ce6",
-      "title": "[DEMO] Machine learning guided protein design of thermostable enzymes for industrial biocatalysis",
-      "authors": [
-        "Chen L",
-        "Novak P"
-      ],
-      "date": "2026-11-16",
-      "dateType": "posted",
-      "source": {
-        "id": "europepmc",
-        "name": "Europe PMC"
-      },
-      "alsoIndexedIn": [],
-      "url": "https://example.org/biopulse-demo/doi-bda882649ce6",
-      "venue": "Research Square",
-      "identifiers": {
-        "doi": "10.5555/test.preprint.epmc"
-      },
-      "categories": [
-        "ai-drug-discovery",
-        "protein-engineering",
-        "industrial-biotech"
-      ],
-      "evidence": "PREPRINT",
-      "evidenceNote": "Preprint — not peer-reviewed.",
-      "summary": {
-        "text": "We present a deep learning model for enzyme engineering.",
-        "basis": "source"
-      },
-      "whyItMatters": {
-        "text": "General context (AI-assisted drug discovery): AI methods are being used to propose drug candidates and protein designs faster, but predictions still require experimental validation.",
-        "basis": "template"
-      },
-      "limitations": [
-        {
-          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
-          "basis": "template"
-        },
-        {
-          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
-          "basis": "template"
-        }
-      ],
-      "verification": {
-        "urlFormatValid": true,
-        "urlHostAllowed": true,
-        "urlCheck": "unchecked",
-        "identifierConsistent": true,
-        "dateValid": true,
-        "checks": [
-          "url-format",
-          "url-host",
-          "date",
-          "identifier-consistency"
-        ]
-      },
-      "score": 3.15
-    },
-    {
-      "id": "doi-792ef1587bc9",
-      "title": "[DEMO] Single-cell multi-omics atlas of engineered T cells during expansion",
-      "authors": [
-        "M. Garcia",
-        "H. Ito"
-      ],
-      "organization": "Demo Institute",
-      "date": "2026-11-16",
-      "dateType": "posted",
-      "source": {
-        "id": "biorxiv",
-        "name": "bioRxiv"
-      },
-      "alsoIndexedIn": [],
-      "url": "https://example.org/biopulse-demo/doi-792ef1587bc9",
-      "venue": "bioRxiv (preprint)",
-      "identifiers": {
-        "doi": "10.5555/demo.rxiv.11"
-      },
-      "categories": [
-        "bioinformatics",
-        "molecular-biology",
-        "immunotechnology"
-      ],
-      "evidence": "PREPRINT",
-      "evidenceNote": "Preprint — not peer-reviewed.",
-      "articleTypes": [
-        "new results"
-      ],
-      "summary": {
-        "text": "We present a single-cell RNA sequencing atlas of CAR-T cells. Further validation is required.",
-        "basis": "source"
-      },
-      "whyItMatters": {
-        "text": "General context (Bioinformatics): Bioinformatics turns large biological datasets into testable hypotheses and is central to modern biology.",
-        "basis": "template"
-      },
-      "limitations": [
-        {
-          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
-          "basis": "template"
-        },
-        {
-          "text": "Further validation is required.",
-          "basis": "source"
-        },
-        {
-          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
-          "basis": "template"
-        }
-      ],
-      "verification": {
-        "urlFormatValid": true,
-        "urlHostAllowed": true,
-        "urlCheck": "unchecked",
-        "identifierConsistent": true,
-        "dateValid": true,
-        "checks": [
-          "url-format",
-          "url-host",
-          "date",
-          "identifier-consistency"
-        ]
-      },
-      "score": 3.15
-    },
-    {
-      "id": "doi-be60fe058a16",
-      "title": "[DEMO] A synthetic genetic circuit for programmable cell-free biosensors",
-      "authors": [
-        "J. Smith",
-        "R. K. Patel"
-      ],
-      "organization": "Test University",
-      "date": "2026-11-16",
-      "dateType": "posted",
-      "source": {
-        "id": "biorxiv",
-        "name": "bioRxiv"
-      },
-      "alsoIndexedIn": [],
-      "url": "https://example.org/biopulse-demo/doi-be60fe058a16",
-      "venue": "bioRxiv (preprint)",
-      "identifiers": {
-        "doi": "10.5555/test.biorxiv.001"
-      },
-      "categories": [
-        "synthetic-biology",
-        "biosensors"
-      ],
-      "evidence": "PREPRINT",
-      "evidenceNote": "Preprint — not peer-reviewed.",
-      "articleTypes": [
-        "new results"
-      ],
-      "summary": {
-        "text": "We engineered a genetic circuit for cell-free biosensing. This is the first demonstration of this design.",
-        "basis": "source"
-      },
-      "whyItMatters": {
-        "text": "General context (Synthetic biology): Synthetic biology applies engineering design to living systems, enabling programmable cells and new bio-based products.",
-        "basis": "template"
-      },
-      "limitations": [
-        {
-          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
-          "basis": "template"
-        },
-        {
-          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
-          "basis": "template"
-        }
-      ],
-      "verification": {
-        "urlFormatValid": true,
-        "urlHostAllowed": true,
-        "urlCheck": "unchecked",
-        "identifierConsistent": true,
-        "dateValid": true,
-        "checks": [
-          "url-format",
-          "url-host",
-          "date",
-          "identifier-consistency"
-        ]
-      },
       "score": 3
     },
     {
@@ -759,6 +752,20 @@
       "categories": [
         "protein-engineering"
       ],
+      "classification": {
+        "primary": "protein-engineering",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "protein-engineering": {
+            "score": 3.5,
+            "terms": [
+              "de novo design",
+              "directed evolution"
+            ]
+          }
+        }
+      },
       "evidence": "PREPRINT",
       "evidenceNote": "Preprint — not peer-reviewed.",
       "articleTypes": [
@@ -769,13 +776,92 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Protein engineering): Engineered proteins and enzymes are the working parts of many biotech products, from therapeutics to industrial catalysts.",
+        "text": "General context (Protein engineering; matched: de novo design, directed evolution): Engineered proteins and enzymes are the working parts of many biotech products, from therapeutics to industrial catalysts.",
         "basis": "template"
       },
       "limitations": [
         {
           "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
           "basis": "template"
+        },
+        {
+          "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
+          "basis": "template"
+        }
+      ],
+      "verification": {
+        "urlFormatValid": true,
+        "urlHostAllowed": true,
+        "urlCheck": "unchecked",
+        "identifierConsistent": true,
+        "dateValid": true,
+        "checks": [
+          "url-format",
+          "url-host",
+          "date",
+          "identifier-consistency"
+        ]
+      },
+      "score": 2.85
+    },
+    {
+      "id": "doi-792ef1587bc9",
+      "title": "[DEMO] Single-cell multi-omics atlas of engineered T cells during expansion",
+      "authors": [
+        "M. Garcia",
+        "H. Ito"
+      ],
+      "organization": "Demo Institute",
+      "date": "2026-11-16",
+      "dateType": "posted",
+      "source": {
+        "id": "biorxiv",
+        "name": "bioRxiv"
+      },
+      "alsoIndexedIn": [],
+      "url": "https://example.org/biopulse-demo/doi-792ef1587bc9",
+      "venue": "bioRxiv (preprint)",
+      "identifiers": {
+        "doi": "10.5555/demo.rxiv.11"
+      },
+      "categories": [
+        "bioinformatics"
+      ],
+      "classification": {
+        "primary": "bioinformatics",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "bioinformatics": {
+            "score": 2.5,
+            "terms": [
+              "single-cell rna",
+              "multi-omic"
+            ]
+          }
+        }
+      },
+      "evidence": "PREPRINT",
+      "evidenceNote": "Preprint — not peer-reviewed.",
+      "articleTypes": [
+        "new results"
+      ],
+      "summary": {
+        "text": "We present a single-cell RNA sequencing atlas of CAR-T cells. Further validation is required.",
+        "basis": "source"
+      },
+      "whyItMatters": {
+        "text": "General context (Bioinformatics; matched: single-cell rna, multi-omic): Bioinformatics turns large biological datasets into testable hypotheses and is central to modern biology.",
+        "basis": "template"
+      },
+      "limitations": [
+        {
+          "text": "Preprints have NOT been peer-reviewed. Findings are preliminary and may change; they should not guide clinical practice.",
+          "basis": "template"
+        },
+        {
+          "text": "Further validation is required.",
+          "basis": "source"
         },
         {
           "text": "BioPulse summarises the abstract only; the full text, methods and data were not reviewed.",
@@ -819,6 +905,26 @@
         "crispr-genetic-engineering",
         "molecular-biology"
       ],
+      "classification": {
+        "primary": "crispr-genetic-engineering",
+        "confidence": "medium",
+        "method": "keyword-rules-v2",
+        "matched": {
+          "crispr-genetic-engineering": {
+            "score": 3,
+            "terms": [
+              "crispr",
+              "CPC C12N15"
+            ]
+          },
+          "molecular-biology": {
+            "score": 2,
+            "terms": [
+              "CPC C12N15"
+            ]
+          }
+        }
+      },
       "evidence": "PATENT APPLICATION",
       "evidenceNote": "Patent application (kind A1). Not evidence of efficacy.",
       "summary": {
@@ -826,7 +932,7 @@
         "basis": "source"
       },
       "whyItMatters": {
-        "text": "General context (Genetic engineering & CRISPR): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
+        "text": "General context (Genetic engineering & CRISPR; matched: crispr, CPC C12N15): Genome-editing advances can change how genetic disease is treated, how gene function is studied and how crop and microbial traits are engineered.",
         "basis": "template"
       },
       "limitations": [
@@ -866,38 +972,33 @@
     }
   ],
   "stats": {
-    "total": 12,
+    "total": 11,
     "byEvidence": {
-      "PEER-REVIEWED": 5,
+      "PEER-REVIEWED": 4,
       "REGULATORY UPDATE": 1,
-      "CLINICAL TRIAL": 1,
       "PREPRINT": 4,
+      "CLINICAL TRIAL": 1,
       "PATENT APPLICATION": 1
     },
     "byCategory": {
       "crispr-genetic-engineering": 2,
-      "biomaterials-nanobiotech": 1,
-      "biosensors": 2,
-      "immunotechnology": 3,
-      "industrial-biotech": 2,
-      "bioprocess-engineering": 1,
-      "environmental-biotech": 1,
-      "microbiology": 1,
       "stem-cells-regenerative": 2,
+      "biosensors": 2,
+      "industrial-biotech": 2,
       "vaccines-diagnostics": 1,
-      "ai-drug-discovery": 1,
       "protein-engineering": 2,
-      "bioinformatics": 1,
-      "molecular-biology": 2,
       "synthetic-biology": 1,
-      "patents-inventions": 1
+      "immunotechnology": 1,
+      "bioinformatics": 1,
+      "patents-inventions": 1,
+      "molecular-biology": 1
     },
     "bySource": {
       "europepmc": 2,
-      "pubmed": 4,
+      "pubmed": 3,
       "ema": 1,
-      "clinicaltrials": 1,
       "biorxiv": 3,
+      "clinicaltrials": 1,
       "epo": 1
     }
   },
@@ -907,9 +1008,12 @@
       "name": "PubMed (NCBI E-utilities)",
       "status": "ok",
       "fetched": 4,
-      "accepted": 4,
-      "rejected": 0,
-      "durationMs": 40
+      "accepted": 3,
+      "rejected": 1,
+      "durationMs": 31,
+      "rejectReasons": {
+        "not-biotech-relevant": 1
+      }
     },
     {
       "id": "europepmc",
@@ -918,7 +1022,7 @@
       "fetched": 2,
       "accepted": 2,
       "rejected": 0,
-      "durationMs": 32
+      "durationMs": 25
     },
     {
       "id": "biorxiv",
@@ -927,7 +1031,7 @@
       "fetched": 3,
       "accepted": 3,
       "rejected": 0,
-      "durationMs": 32
+      "durationMs": 25
     },
     {
       "id": "medrxiv",
@@ -936,7 +1040,7 @@
       "fetched": 0,
       "accepted": 0,
       "rejected": 0,
-      "durationMs": 32
+      "durationMs": 24
     },
     {
       "id": "clinicaltrials",
@@ -945,7 +1049,7 @@
       "fetched": 1,
       "accepted": 1,
       "rejected": 0,
-      "durationMs": 32
+      "durationMs": 24
     },
     {
       "id": "fda",
@@ -954,8 +1058,13 @@
       "fetched": 3,
       "accepted": 0,
       "rejected": 3,
-      "durationMs": 34,
-      "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items"
+      "durationMs": 25,
+      "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items",
+      "rejectReasons": {
+        "future-date": 1,
+        "url-host-not-allowed": 1,
+        "not-biotech-relevant": 1
+      }
     },
     {
       "id": "ema",
@@ -964,7 +1073,7 @@
       "fetched": 1,
       "accepted": 1,
       "rejected": 0,
-      "durationMs": 31
+      "durationMs": 24
     },
     {
       "id": "epo",
@@ -973,7 +1082,7 @@
       "fetched": 1,
       "accepted": 1,
       "rejected": 0,
-      "durationMs": 33
+      "durationMs": 25
     },
     {
       "id": "company",
@@ -987,17 +1096,41 @@
     }
   ],
   "rejected": {
-    "count": 3,
+    "count": 4,
     "reasons": {
       "future-date": 1,
       "url-host-not-allowed": 1,
-      "not-biotech-relevant": 1
+      "not-biotech-relevant": 2
     }
   },
   "ai": {
     "enabled": false,
     "used": false,
-    "note": "AI summarisation disabled (no ANTHROPIC_API_KEY configured); deterministic summaries used."
+    "note": "AI summarisation disabled (no ANTHROPIC_API_KEY configured); deterministic summaries used.",
+    "status": "disabled"
+  },
+  "verificationSummary": {
+    "collected": 15,
+    "metadataValidated": 11,
+    "published": 11,
+    "linkOk": 0,
+    "linkRestricted": 0,
+    "linkFailed": 0,
+    "linkNotChecked": 11
+  },
+  "run": {
+    "pipelineVersion": "2.0.0",
+    "config": {
+      "lookbackDays": 2,
+      "patentLookbackDays": 7,
+      "seenWindowDays": 0,
+      "maxRecordsPerDay": 200,
+      "verifyUrls": false,
+      "verifyUrlLimit": 60,
+      "preprintMaxPages": 20,
+      "classification": "keyword-rules-v2",
+      "aiModel": "none"
+    }
   },
   "notice": "DEMONSTRATION DATA — fictional records generated from synthetic test fixtures for development. This is not real or current research."
 }

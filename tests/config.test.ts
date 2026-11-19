@@ -90,3 +90,13 @@ describe('GitHub Actions daily workflow', () => {
     for (const k of ['ANTHROPIC_API_KEY', 'EPO_OPS_KEY', 'EPO_OPS_SECRET', 'NCBI_API_KEY']) expect(env[k]).toBe(`\${{ secrets.${k} }}`);
   });
 });
+
+describe('GitHub Actions failure visibility', () => {
+  const wf = parse(readFileSync('.github/workflows/daily.yml', 'utf8'));
+  it('fails an alert job (after deploying) when the run had to preserve previous data', () => {
+    expect(wf.jobs.alert.needs).toEqual(['update', 'deploy']);
+    expect(wf.jobs.alert.if).toContain("needs.update.outputs.outcome == 'preserved-previous'");
+    expect(wf.jobs.alert.if).toContain("needs.update.outputs.pipeline_step == 'failure'");
+    expect(wf.jobs.alert.steps[0].run).toContain('exit 1');
+  });
+});

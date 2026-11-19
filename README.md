@@ -205,12 +205,17 @@ A preserved-previous outcome still redeploys, so the site can show the failure n
 - **Live API access was not exercised from the development sandbox.** Its network blocks these hosts. Collectors were built from each API's documented formats and tested against synthetic responses, so the first real run happens in GitHub Actions. Check that run's job summary.
 - The EMA feed URL (`https://www.ema.europa.eu/en/news.xml`) and the FDA biologics feed URL come from published feed listings. If either moves, the source shows as *failed* on About & Sources; update `pipeline/config.ts`.
 - The EPO OPS CQL query syntax and response parsing follow the OPS 3.2 documentation, but have not been run against the live service without credentials.
-- Classification uses transparent keyword and CPC rules, so it can mis-file records or miss relevant ones.
+- Classification uses transparent keyword and CPC rules (v2: specific vs broad terms, confidence levels, matched terms shown on each card). It can still mis-file records or miss relevant ones.
+- Only the highest-ranked links (60 per day by default) are live-checked; all other records show "metadata validated · link not live-checked".
 - "Peer-reviewed" means the item is indexed as a journal article in PubMed or Europe PMC. BioPulse does not verify peer review itself.
 - Summaries rely on abstracts. Full texts, methods and data are not reviewed.
 - The ranking score reflects evidence type and metadata completeness, not scientific importance.
 - Archives grow by roughly 0.2–0.4 MB of JSON per day; git compresses it well. Lower `BIOPULSE_MAX_RECORDS` if needed.
 - GitHub disables scheduled workflows after 60 days without repository activity. The daily data commits normally prevent this.
+
+## Changelog
+
+- **v2 (pipeline 2.0.0):** response to the 19 Nov 2026 audit. Changes: confidence-rated classification, honest verification counters, balanced daily cap (preprints were being cut entirely), FDA http-link fix, per-source health, AI status, incremental archive loading, run manifest, and an alert on preserved data. Details, root causes and test results are in [`docs/upgrade-v2.md`](docs/upgrade-v2.md).
 
 ## License
 
