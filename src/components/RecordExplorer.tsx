@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '../../shared/categories';
-import { EVIDENCE_ORDER } from '../../shared/evidence';
+import { EVIDENCE, EVIDENCE_ORDER } from '../../shared/evidence';
+import { useView } from '../lib/view';
 import type { EvidenceClass, SourceId } from '../../shared/schema';
 import { ARCHIVE_PAGE_DAYS, loadRange, useAsync, type RangeKey } from '../lib/data';
 import { applyFilters, toggle, type FilterState, type SortKey } from '../lib/filters';
@@ -61,6 +62,8 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
   const [f, update] = useFilterParams();
   const [limit, setLimit] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
+  const [moreFilters, setMoreFilters] = useState(false);
+  const { detailed } = useView();
   const [maxDays, setMaxDays] = useState(ARCHIVE_PAGE_DAYS);
   const state = useAsync(() => loadRange(f.range, maxDays), [f.range, maxDays]);
 
@@ -79,7 +82,7 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
         <div className="flex gap-2">
           <label className="relative block flex-1">
             <span className="sr-only">Search records</span>
-            <input className="input pl-8" type="search" placeholder="Search title, author, ID…" value={f.q} onChange={(e) => update({ q: e.target.value })} />
+            <input className="input pl-8" type="search" placeholder="Search…" value={f.q} onChange={(e) => update({ q: e.target.value })} />
             <svg viewBox="0 0 20 20" className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-fg-subtle" fill="currentColor" aria-hidden>
               <path d="M8.5 3a5.5 5.5 0 014.38 8.82l3.65 3.65-1.06 1.06-3.65-3.65A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" />
             </svg>
@@ -89,6 +92,34 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
           </button>
         </div>
         <div className={`${showFilters ? 'block' : 'hidden'} mt-4 space-y-5 lg:block`}>
+          {evidenceOptions.length > 1 && (
+            <fieldset>
+              <legend className="mb-2 text-sm font-medium text-fg">Type</legend>
+              <div className="flex flex-wrap gap-1.5">
+                {evidenceOptions.map((e) => (
+                  <button key={e} type="button" aria-pressed={f.evidence.includes(e)} onClick={() => update({ evidence: toggle(f.evidence, e) })} className={`chip ${f.evidence.includes(e) ? 'border-accent/60 text-fg' : ''}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[e]}`} aria-hidden />
+                    {EVIDENCE[e].short}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          )}
+          {!lockedCategory && (
+            <label className="block text-sm font-medium text-fg">
+              Field
+              <select className="input mt-1" value={f.categories[0] ?? ''} onChange={(e) => update({ categories: e.target.value ? [e.target.value] : [] })}>
+                <option value="">All fields</option>
+                {CATEGORIES.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {detailed || moreFilters ? (
+            <>
           <div className="grid grid-cols-2 gap-2">
             <label className="col-span-2 text-xs text-fg-subtle sm:col-span-1 lg:col-span-2">
               Dataset
@@ -121,32 +152,6 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
               <input className="input mt-1" type="date" value={f.to} onChange={(e) => update({ to: e.target.value })} />
             </label>
           </div>
-          {evidenceOptions.length > 1 && (
-            <fieldset>
-              <legend className="eyebrow mb-2">Evidence</legend>
-              <div className="flex flex-wrap gap-1.5">
-                {evidenceOptions.map((e) => (
-                  <button key={e} type="button" aria-pressed={f.evidence.includes(e)} onClick={() => update({ evidence: toggle(f.evidence, e) })} className={`chip ${f.evidence.includes(e) ? 'border-accent/60 text-fg' : ''}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[e]}`} aria-hidden />
-                    {e.toLowerCase()}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          )}
-          {!lockedCategory && (
-            <label className="block text-xs text-fg-subtle">
-              Category
-              <select className="input mt-1" value={f.categories[0] ?? ''} onChange={(e) => update({ categories: e.target.value ? [e.target.value] : [] })}>
-                <option value="">All categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
           <fieldset>
             <legend className="eyebrow mb-2">Source</legend>
             <div className="flex flex-wrap gap-1.5">
@@ -157,6 +162,12 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
               ))}
             </div>
           </fieldset>
+            </>
+          ) : (
+            <button type="button" className="text-sm text-signal hover:text-fg" onClick={() => setMoreFilters(true)}>
+              More filters (dates, sources, sort, archive) ›
+            </button>
+          )}
           {activeCount + (f.q ? 1 : 0) > 0 && (
             <button type="button" className="text-xs text-signal hover:text-fg" onClick={() => update({ q: '', categories: [], evidence: [], sources: [], from: '', to: '' })}>
               Clear all filters

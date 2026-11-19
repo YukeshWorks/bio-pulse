@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { CATEGORY_BY_ID } from '../../shared/categories';
 import { EVIDENCE } from '../../shared/evidence';
 import type { BioRecord, EvidenceClass, TextBasis } from '../../shared/schema';
+import { useView } from '../lib/view';
 
 const EV_STYLE: Record<EvidenceClass, string> = {
   'PEER-REVIEWED': 'text-ev-peer border-ev-peer/40 bg-ev-peer/10',
@@ -21,13 +22,22 @@ export const EV_DOT: Record<EvidenceClass, string> = {
   'COMPANY ANNOUNCEMENT': 'bg-ev-company',
 };
 
-export function EvidenceBadge({ evidence, patent }: { evidence: EvidenceClass; patent?: BioRecord['patent'] }) {
+export function EvidenceBadge({ evidence, patent, technical = false }: { evidence: EvidenceClass; patent?: BioRecord['patent']; technical?: boolean }) {
+  const { detailed } = useView();
+  const title = `${EVIDENCE[evidence].definition} ${EVIDENCE[evidence].caution}`;
+  if (!detailed && !technical) {
+    // Simple view: plain words, always including the key caveat (e.g. "Preprint · not peer-reviewed").
+    const plain = evidence === 'PATENT APPLICATION' && patent?.status === 'granted' ? 'Granted patent · not proof it works' : EVIDENCE[evidence].plain;
+    return (
+      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${EV_STYLE[evidence]}`} title={title}>
+        <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[evidence]}`} aria-hidden />
+        {plain}
+      </span>
+    );
+  }
   const sub = evidence === 'PATENT APPLICATION' && patent?.status === 'granted' ? ' · GRANTED' : '';
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[10.5px] font-medium tracking-wide ${EV_STYLE[evidence]}`}
-      title={`${EVIDENCE[evidence].definition} ${EVIDENCE[evidence].caution}`}
-    >
+    <span className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[10.5px] font-medium tracking-wide ${EV_STYLE[evidence]}`} title={title}>
       <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[evidence]}`} aria-hidden />
       {evidence}
       {sub}

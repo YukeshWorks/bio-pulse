@@ -1,5 +1,6 @@
 import { HashRouter, Link, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { ViewProvider } from './lib/view';
 import { EmptyState } from './components/States';
 import { AboutPage } from './pages/AboutPage';
 import { ArchiveDayPage, ArchivePage } from './pages/ArchivePage';
@@ -38,8 +39,10 @@ export function AppRoutes() {
 
 export default function App() {
   return (
-    <HashRouter>
-      <AppRoutes />
-    </HashRouter>
+    <ViewProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </ViewProvider>
   );
 }

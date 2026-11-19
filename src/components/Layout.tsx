@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { DATA_MODE } from '../lib/data';
+import { ViewToggle } from '../lib/view';
 
 export function Logo({ className = '' }: { className?: string }) {
   return (
@@ -22,13 +23,13 @@ export function Logo({ className = '' }: { className?: string }) {
 
 export const NAV = [
   { to: '/', label: 'Home', end: true },
-  { to: '/latest', label: 'Latest Discoveries' },
-  { to: '/papers', label: 'Research Papers' },
-  { to: '/patents', label: 'Patents & Inventions' },
-  { to: '/trials', label: 'Clinical Trials' },
-  { to: '/categories', label: 'Categories' },
-  { to: '/archive', label: 'Daily Archive' },
-  { to: '/about', label: 'About & Sources' },
+  { to: '/latest', label: 'Latest' },
+  { to: '/papers', label: 'Papers' },
+  { to: '/trials', label: 'Trials' },
+  { to: '/patents', label: 'Patents' },
+  { to: '/categories', label: 'Fields' },
+  { to: '/archive', label: 'Archive' },
+  { to: '/about', label: 'About' },
 ];
 
 function Header() {
@@ -38,23 +39,26 @@ function Header() {
     setOpen(false);
   }, [loc.pathname]);
   const linkCls = ({ isActive }: { isActive: boolean }) =>
-    `whitespace-nowrap rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors ${isActive ? 'bg-ink-700 text-fg' : 'text-fg-muted hover:bg-ink-800 hover:text-fg'}`;
+    `whitespace-nowrap rounded-md px-3 py-1.5 text-[15px] font-medium transition-colors ${isActive ? 'bg-ink-700 text-fg' : 'text-fg-muted hover:bg-ink-800 hover:text-fg'}`;
   return (
     <header className="sticky top-0 z-40 border-b border-ink-600/60 bg-ink-900/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link to="/" aria-label="BioPulse home">
           <Logo />
         </Link>
-        <nav className="hidden items-center gap-0.5 xl:flex" aria-label="Main">
+        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Main">
           {NAV.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={linkCls}>
               {n.label}
             </NavLink>
           ))}
         </nav>
+        <div className="hidden lg:block">
+          <ViewToggle />
+        </div>
         <button
           type="button"
-          className="rounded-lg border border-ink-600 p-2 text-fg-muted hover:text-fg xl:hidden"
+          className="rounded-lg border border-ink-600 p-2 text-fg-muted hover:text-fg lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? 'Close menu' : 'Open menu'}
@@ -66,7 +70,10 @@ function Header() {
         </button>
       </div>
       {open && (
-        <nav id="mobile-nav" className="border-t border-ink-600/60 px-4 pb-4 pt-2 xl:hidden" aria-label="Main">
+        <nav id="mobile-nav" className="border-t border-ink-600/60 px-4 pb-4 pt-2 lg:hidden" aria-label="Main">
+          <div className="mb-3">
+            <ViewToggle />
+          </div>
           <div className="grid grid-cols-2 gap-1">
             {NAV.map((n) => (
               <NavLink key={n.to} to={n.to} end={n.end} className={linkCls}>

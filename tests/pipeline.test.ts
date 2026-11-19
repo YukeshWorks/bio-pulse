@@ -191,9 +191,9 @@ describe('one-sentence briefing', () => {
   });
   it('flags preprints and patents in the sentence', () => {
     const p = deterministicBriefing([rec(1)], [rec(1, { evidence: 'PREPRINT' })]);
-    expect(p.sentence).toMatch(/not-yet-peer-reviewed preprint/);
+    expect(p.sentence).toMatch(/preprint not yet peer-reviewed/);
     const pat = deterministicBriefing([rec(2)], [rec(2, { evidence: 'PATENT APPLICATION' })]);
-    expect(pat.sentence).toMatch(/patent filing/);
+    expect(pat.sentence).toMatch(/patent filing, which does not prove it works/);
     expect(pat.sentence).not.toMatch(/peer-reviewed study/);
   });
   it('returns no headline when there are no records', () => {

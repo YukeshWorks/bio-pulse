@@ -7,10 +7,10 @@ export const BRIEFING_MAX_WORDS = 30;
 
 const PHRASE: Record<EvidenceClass, string> = {
   'PEER-REVIEWED': 'a peer-reviewed study',
-  PREPRINT: 'a not-yet-peer-reviewed preprint',
-  'CLINICAL TRIAL': 'a newly registered clinical trial',
+  PREPRINT: 'a preprint not yet peer-reviewed',
+  'CLINICAL TRIAL': 'a newly registered clinical trial with no results yet',
   'REGULATORY UPDATE': 'a regulatory update',
-  'PATENT APPLICATION': 'a patent filing',
+  'PATENT APPLICATION': 'a patent filing, which does not prove it works',
   'COMPANY ANNOUNCEMENT': 'a company announcement',
 };
 
@@ -37,46 +37,34 @@ export function deterministicBriefing(records: BioRecord[], top: BioRecord[]): B
   const [leadCat] = [...catCounts.entries()].sort((a, b) => b[1] - a[1])[0];
 
   const a = top[0];
-  const b = top[1];
-  const head =
+  // Plain one-story sentence: "Today's top biotech story is “<title>”, a peer-reviewed study, one of
+  // 200 new records today, most of them in microbiology."
+  const field = lowerName(leadCat);
+  const tail =
     records.length === 1
-      ? `${capitalize(lowerName(leadCat))} produced today's only new biotech record`
-      : `${capitalize(lowerName(leadCat))} led today's ${records.length} new biotech records`;
-  const quote = (r: BioRecord, n: number) => `${PHRASE[r.evidence]} on “${stripTrailing(truncateWords(r.title, n))}”`;
+      ? 'the only new record BioPulse found today.'
+      : `one of ${records.length} new records today, most of them in ${field}.`;
+  const build = (n: number) => `Today's top biotech story is “${stripTrailing(truncateWords(a.title, n))}”, ${PHRASE[a.evidence]}, ${tail}`;
   const fits = (s: string) => wordCount(s) <= BRIEFING_MAX_WORDS;
-
-  // Prefer two highlights when both titles stay readable (>= 6 words); otherwise one longer highlight.
   let sentence = '';
-  let citations = [a.id];
-  if (b) {
-    for (let n = 9; n >= 6 && !sentence; n--) {
-      const s = `${head}, headlined by ${quote(a, n)} and ${quote(b, n)}.`;
-      if (fits(s)) {
-        sentence = s;
-        citations = [a.id, b.id];
-      }
-    }
-  }
-  for (let n = 16; n >= 3 && !sentence; n--) {
-    const s = `${head}, headlined by ${quote(a, n)}.`;
+  for (let n = 18; n >= 3 && !sentence; n--) {
+    const s = build(n);
     if (fits(s)) sentence = s;
   }
-  if (!sentence) sentence = `${head}, headlined by ${quote(a, 3)}.`;
+  if (!sentence) sentence = build(3);
   if (wordCount(sentence) < BRIEFING_MIN_WORDS) {
-    sentence = sentence.replace(/\.$/, '; evidence labels and original sources are linked below.');
+    sentence = sentence.replace(/\.$/, ', with every source linked below.');
   }
   // Last-resort hard cap (only reachable with pathological category names).
   if (!fits(sentence)) sentence = `${sentence.split(/\s+/).slice(0, BRIEFING_MAX_WORDS).join(' ').replace(/[,;:]$/, '')}…`;
+  const citations = [a.id];
 
   return {
     sentence,
     wordCount: wordCount(sentence),
     citations,
     method: 'deterministic',
-    note: 'Generated deterministically from source metadata (category counts, evidence labels and verbatim titles). No AI was used.',
+    note: 'Generated deterministically from source metadata (the top story’s verbatim title, its evidence type and today’s record counts). No AI was used.',
   };
 }
 
-function capitalize(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}

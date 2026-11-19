@@ -9,8 +9,8 @@
     "to": "2026-11-16"
   },
   "briefing": {
-    "sentence": "Protein engineering led today's 11 new biotech records, headlined by a peer-reviewed study on “Base editing of PCSK9 in primate liver with an engineered CRISPR adenine base editor”.",
-    "wordCount": 28,
+    "sentence": "Today's top biotech story is “Base editing of PCSK9 in primate liver with an engineered…”, a peer-reviewed study, one of 11 new records today, most of them in protein engineering.",
+    "wordCount": 30,
     "citations": [
       "doi-a3e8fdfa99b1"
     ],
@@ -1010,7 +1010,7 @@
       "fetched": 4,
       "accepted": 3,
       "rejected": 1,
-      "durationMs": 31,
+      "durationMs": 34,
       "rejectReasons": {
         "not-biotech-relevant": 1
       }
@@ -1031,7 +1031,7 @@
       "fetched": 3,
       "accepted": 3,
       "rejected": 0,
-      "durationMs": 25
+      "durationMs": 24
     },
     {
       "id": "medrxiv",
