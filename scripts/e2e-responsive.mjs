@@ -33,9 +33,25 @@ function serve(dataDir) {
   });
 }
 
+/** Synthetic responses for the four live-search APIs (no real network in tests). */
+const LIVE = {
+  'www.ebi.ac.uk': { resultList: { result: [{ id: '99100001', source: 'MED', pmid: '99100001', doi: '10.5555/live.1', title: 'TEST CRISPR base editing in vivo', journalTitle: 'Test Journal', firstPublicationDate: '2026-11-10' }, { id: 'PPR900001', source: 'PPR', title: 'TEST preprint on base editing', firstPublicationDate: '2026-11-12' }] } },
+  esearch: { esearchresult: { idlist: ['99100002'] } },
+  esummary: { result: { uids: ['99100002'], '99100002': { title: 'TEST PubMed article', sortpubdate: '2026/11/11 00:00', pubtype: ['Journal Article'], authors: [], articleids: [] } } },
+  'clinicaltrials.gov': { studies: [{ protocolSection: { identificationModule: { nctId: 'NCT09999911', briefTitle: 'TEST base editing trial' }, statusModule: { overallStatus: 'RECRUITING' } } }] },
+  'api.openalex.org': { results: [{ id: 'https://openalex.org/W9990002', display_name: 'TEST OpenAlex article', type: 'article', primary_location: { source: { type: 'journal' } } }] },
+};
+async function mockLiveApis(page) {
+  await page.route(/ebi\.ac\.uk|eutils\.ncbi|clinicaltrials\.gov\/api|api\.openalex\.org/, (route) => {
+    const u = route.request().url();
+    const body = u.includes('esearch') ? LIVE.esearch : u.includes('esummary') ? LIVE.esummary : LIVE[new URL(u).host];
+    route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(body ?? {}) });
+  });
+}
+
 const listen = (srv) => new Promise((r) => srv.listen(0, '127.0.0.1', () => r(srv.address().port)));
 
-const ROUTES = ['/', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
+const ROUTES = ['/', '/search', '/search?q=base%20editing', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
 const WIDTHS = [320, 390, 768, 1280];
 const failures = [];
 const fail = (m) => {
@@ -49,6 +65,7 @@ const browser = await chromium.launch();
 try {
   for (const width of WIDTHS) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await mockLiveApis(page);
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
@@ -67,6 +84,10 @@ try {
     if (!/one sentence/i.test(briefing ?? '')) fail(`home @${width}px: briefing heading missing`);
     const cards = await page.$$('section[aria-labelledby="top-title"] article');
     if (cards.length !== 3) fail(`home @${width}px: expected 3 discoveries, found ${cards.length}`);
+    await page.goto(`http://127.0.0.1:${port}/#/search?q=base%20editing`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(300);
+    const live = await page.$$eval('section[aria-live] li a[href^="https://"]', (as) => as.length);
+    if (live < 3) fail(`search @${width}px: expected live results, found ${live} links`);
     await page.close();
     console.log(`✓ ${ROUTES.length} routes checked at ${width}px`);
   }

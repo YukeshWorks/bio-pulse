@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { EVIDENCE, EVIDENCE_ORDER } from '../../shared/evidence';
 import { EV_DOT } from '../components/Badges';
 import { BriefingHero, CategoryNav, CoverageBanner, DiscoveryCard, RecordRow, StaleBanner, StatusStrip, VerificationLine } from '../components/Home';
@@ -26,6 +27,7 @@ export function HomePage() {
       <div className="space-y-3">
         <StatusStrip data={data} status={status.data} />
         <StaleBanner data={data} status={status.data} />
+        <QuickSearch />
       </div>
 
       {latest.loading && <Loading />}
@@ -135,5 +137,29 @@ function EvidenceBar({ byEvidence, total }: { byEvidence: Record<string, number>
         />
       ))}
     </div>
+  );
+}
+
+/** Homepage entry point to live search across all free databases. */
+function QuickSearch() {
+  const [q, setQ] = useState('');
+  const nav = useNavigate();
+  return (
+    <form
+      role="search"
+      className="flex max-w-2xl gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (q.trim()) nav(`/search?q=${encodeURIComponent(q.trim())}`);
+      }}
+    >
+      <label className="flex-1">
+        <span className="sr-only">Search all sources</span>
+        <input className="input h-11 text-[15px]" type="search" placeholder="Search all sources — any topic, gene or project name" value={q} onChange={(e) => setQ(e.target.value)} />
+      </label>
+      <button type="submit" className="h-11 rounded-lg bg-accent px-5 text-sm font-semibold text-ink-950 transition hover:brightness-110 active:scale-[0.98]">
+        Search
+      </button>
+    </form>
   );
 }
