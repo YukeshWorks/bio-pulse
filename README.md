@@ -217,6 +217,9 @@ A preserved-previous outcome still redeploys, so the site can show the failure n
 
 ## Changelog
 
+- **v2.3:** **Search everywhere** page (`/#/search`) plus a homepage search box. It runs one live query across Europe PMC, PubMed, ClinicalTrials.gov and OpenAlex (free, no keys), merges duplicates and labels each result honestly. See [`docs/search-options.md`](docs/search-options.md) for free and paid source options.
+- **v2.2:** purposeful motion: scroll reveal, word-by-word briefing, heartbeat line, hover feedback, smooth details, reduced-motion support.
+
 - **v2.1:** readability. Simple view by default with plain-language labels, details on demand, a Simple/Detailed switch, higher-contrast text, shorter menu names, simpler filters and a plainer daily sentence.
 
 - **v2 (pipeline 2.0.0):** response to the 19 Nov 2026 audit. Changes: confidence-rated classification, honest verification counters, balanced daily cap (preprints were being cut entirely), FDA http-link fix, per-source health, AI status, incremental archive loading, run manifest, and an alert on preserved data. Details, root causes and test results are in [`docs/upgrade-v2.md`](docs/upgrade-v2.md).

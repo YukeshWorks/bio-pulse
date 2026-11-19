@@ -24,6 +24,7 @@ export function Logo({ className = '' }: { className?: string }) {
 
 export const NAV = [
   { to: '/', label: 'Home', end: true },
+  { to: '/search', label: 'Search' },
   { to: '/latest', label: 'Latest' },
   { to: '/papers', label: 'Papers' },
   { to: '/trials', label: 'Trials' },
