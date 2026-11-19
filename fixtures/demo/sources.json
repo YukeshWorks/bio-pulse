@@ -22,9 +22,12 @@
         "name": "PubMed (NCBI E-utilities)",
         "status": "ok",
         "fetched": 11,
-        "accepted": 11,
-        "rejected": 0,
-        "durationMs": 9
+        "accepted": 10,
+        "rejected": 1,
+        "durationMs": 6,
+        "rejectReasons": {
+          "not-biotech-relevant": 1
+        }
       }
     },
     {
@@ -49,7 +52,7 @@
         "fetched": 2,
         "accepted": 1,
         "rejected": 0,
-        "durationMs": 3
+        "durationMs": 2
       }
     },
     {
@@ -73,7 +76,7 @@
         "fetched": 3,
         "accepted": 3,
         "rejected": 0,
-        "durationMs": 3
+        "durationMs": 2
       }
     },
     {
@@ -97,7 +100,7 @@
         "fetched": 0,
         "accepted": 0,
         "rejected": 0,
-        "durationMs": 3
+        "durationMs": 2
       }
     },
     {
@@ -121,7 +124,7 @@
         "fetched": 1,
         "accepted": 1,
         "rejected": 0,
-        "durationMs": 3
+        "durationMs": 2
       }
     },
     {
@@ -145,8 +148,12 @@
         "fetched": 3,
         "accepted": 1,
         "rejected": 2,
-        "durationMs": 4,
-        "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items"
+        "durationMs": 2,
+        "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items",
+        "rejectReasons": {
+          "url-host-not-allowed": 1,
+          "not-biotech-relevant": 1
+        }
       }
     },
     {
@@ -170,7 +177,7 @@
         "fetched": 1,
         "accepted": 1,
         "rejected": 0,
-        "durationMs": 3
+        "durationMs": 2
       }
     },
     {
@@ -194,7 +201,7 @@
         "fetched": 1,
         "accepted": 1,
         "rejected": 0,
-        "durationMs": 4
+        "durationMs": 2
       }
     },
     {

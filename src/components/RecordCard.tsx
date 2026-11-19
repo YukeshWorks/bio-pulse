@@ -65,6 +65,44 @@ export function SourceLink({ r, className = '' }: { r: BioRecord; className?: st
   );
 }
 
+const LINK_STATUS: Record<BioRecord['verification']['urlCheck'], { label: string; cls: string; title: string }> = {
+  ok: { label: 'Link live-checked', cls: 'text-accent', title: 'The original URL responded successfully when BioPulse checked it during the daily run. This confirms the link works, not the science.' },
+  restricted: { label: 'Link reachable (restricted)', cls: 'text-fg-muted', title: 'The source server responded but refused an automated check (e.g. 403/429). The link host and identifiers passed validation.' },
+  unchecked: { label: 'Metadata validated · link not live-checked', cls: 'text-fg-subtle', title: 'Official host, HTTPS, identifier/URL consistency and date passed validation. BioPulse live-checks only the highest-ranked links each day.' },
+  failed: { label: 'Link check failed', cls: 'text-ev-reg', title: 'The link could not be reached during the daily run (network error).' },
+};
+
+/** Verification status of a record: metadata validation vs live link check (never scientific verification). */
+export function LinkStatus({ r }: { r: BioRecord }) {
+  const s = LINK_STATUS[r.verification.urlCheck];
+  return (
+    <span className={`text-[11px] ${s.cls}`} title={s.title}>
+      {r.verification.urlCheck === 'ok' ? '✓ ' : ''}
+      {s.label}
+    </span>
+  );
+}
+
+function WhyCategory({ r }: { r: BioRecord }) {
+  const c = r.classification;
+  if (!c) return null;
+  return (
+    <details className="text-xs text-fg-subtle">
+      <summary className="cursor-pointer hover:text-fg">
+        Why this category? <span className={c.confidence === 'low' ? 'text-ev-preprint' : ''}>({c.confidence} confidence)</span>
+      </summary>
+      <ul className="mt-1 space-y-0.5 pl-3">
+        {Object.entries(c.matched).map(([id, m]) => (
+          <li key={id}>
+            <span className="text-fg-muted">{id}</span> — matched {m.terms.join(', ')} (score {m.score})
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1">Assigned by transparent keyword/CPC rules ({c.method}), not by expert review.</p>
+    </details>
+  );
+}
+
 export function RecordCard({ r, day, index = 0 }: { r: BioRecord; day?: string; index?: number }) {
   const [open, setOpen] = useState(false);
   return (
@@ -122,10 +160,14 @@ export function RecordCard({ r, day, index = 0 }: { r: BioRecord; day?: string; 
             </ul>
           </div>
           <p className="text-xs text-fg-subtle">Evidence note: {r.evidenceNote}</p>
+          <WhyCategory r={r} />
         </div>
       )}
       <div className="mt-auto flex flex-col gap-2 border-t border-ink-600/50 pt-3 sm:flex-row sm:items-center sm:justify-between">
-        <Identifiers r={r} />
+        <div className="flex flex-col gap-1">
+          <Identifiers r={r} />
+          <LinkStatus r={r} />
+        </div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {r.alsoIndexedIn.map((a) => (
             <a key={a.id} href={a.url} target="_blank" rel="noopener noreferrer" className="text-xs text-fg-subtle hover:text-fg">

@@ -2,6 +2,7 @@ import type { EvidenceClass, SourceId } from '../../shared/schema';
 import type { FeedConfig } from '../config';
 import { addDays, parseSourceDate } from '../lib/dates';
 import { cleanText, cleanTitle } from '../lib/text';
+import { ALLOWED_HOSTS } from '../lib/validate';
 import { asArray, nodeText, parseXml } from '../lib/xml';
 import type { Collector, CollectorContext, RawRecord } from '../types';
 
@@ -53,12 +54,7 @@ async function collectFeeds(ctx: CollectorContext, feeds: FeedConfig[], sourceId
       const feedHost = new URL(feed.url).host;
       for (const it of items) {
         if (it.date && it.date < from) continue;
-        let link = it.link;
-        try {
-          link = new URL(it.link, feed.url).toString();
-        } catch {
-          /* invalid links are rejected by validation */
-        }
+        const link = normalizeOfficialLink(it.link, feed.url, sourceId);
         records.push({
           sourceId,
           sourceName,
@@ -82,6 +78,22 @@ async function collectFeeds(ctx: CollectorContext, feeds: FeedConfig[], sourceId
   }
   if (feeds.length > 0 && failures === feeds.length) throw new Error(`All ${sourceName} feeds failed: ${warnings.join('; ')}`);
   return { records, warnings };
+}
+
+/**
+ * Resolve relative links and upgrade `http://` to `https://` ONLY for the regulator's own official hosts
+ * (FDA/EMA feeds have published plain-http links to pages that are served over HTTPS). Links to any
+ * other host are left untouched, so off-site or insecure links are still rejected by validation.
+ */
+export function normalizeOfficialLink(link: string, base: string, sourceId: SourceId): string {
+  let u: URL;
+  try {
+    u = new URL(link, base);
+  } catch {
+    return link;
+  }
+  if (u.protocol === 'http:' && (ALLOWED_HOSTS[sourceId] ?? []).includes(u.host.toLowerCase())) u.protocol = 'https:';
+  return u.toString();
 }
 
 export const fdaCollector: Collector = {

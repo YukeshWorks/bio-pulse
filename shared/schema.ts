@@ -63,6 +63,18 @@ export const VerificationSchema = z.object({
   checks: z.array(z.string()),
 });
 
+/**
+ * How a record's categories were assigned (added in pipeline v2; optional so v1 archives stay valid).
+ * `matched` lists the terms or CPC classes that produced each category's score.
+ */
+export const ClassificationSchema = z.object({
+  primary: z.string(),
+  confidence: z.enum(['high', 'medium', 'low']),
+  method: z.string(),
+  matched: z.record(z.string(), z.object({ score: z.number(), terms: z.array(z.string()) })),
+});
+export type Classification = z.infer<typeof ClassificationSchema>;
+
 export const RecordSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: z.string().min(5),
@@ -76,6 +88,7 @@ export const RecordSchema = z.object({
   venue: z.string().optional(),
   identifiers: IdentifiersSchema,
   categories: z.array(z.string()).min(1),
+  classification: ClassificationSchema.optional(),
   evidence: EvidenceClassSchema,
   evidenceNote: z.string(),
   articleTypes: z.array(z.string()).optional(),
@@ -143,6 +156,10 @@ export const SourceRunStatusSchema = z.object({
   durationMs: z.number().min(0),
   error: z.string().optional(),
   note: z.string().optional(),
+  /** Rejections by reason code for this source (e.g. non-https-url, not-biotech-relevant). */
+  rejectReasons: z.record(z.string(), z.number().int()).optional(),
+  /** Valid records dropped only because of the daily volume cap (not a quality rejection). */
+  capped: z.number().int().min(0).optional(),
 });
 export type SourceRunStatus = z.infer<typeof SourceRunStatusSchema>;
 
@@ -165,7 +182,37 @@ export const DailyDatasetSchema = z
     }),
     sources: z.array(SourceRunStatusSchema),
     rejected: z.object({ count: z.number().int().min(0), reasons: z.record(z.string(), z.number().int()) }),
-    ai: z.object({ enabled: z.boolean(), used: z.boolean(), model: z.string().optional(), note: z.string() }),
+    ai: z.object({
+      enabled: z.boolean(),
+      used: z.boolean(),
+      model: z.string().optional(),
+      note: z.string(),
+      /** disabled: no key; used: all AI fields accepted; partial: some fields failed validation;
+       *  fallback: response refused/truncated/invalid; failed: request error. */
+      status: z.enum(['disabled', 'used', 'partial', 'fallback', 'failed', 'not-needed']).optional(),
+      failure: z.string().optional(),
+    }),
+    /** Honest verification counters: metadata validation is not the same as a live link check. */
+    verificationSummary: z
+      .object({
+        collected: z.number().int().min(0),
+        metadataValidated: z.number().int().min(0),
+        published: z.number().int().min(0),
+        linkOk: z.number().int().min(0),
+        linkRestricted: z.number().int().min(0),
+        linkFailed: z.number().int().min(0),
+        linkNotChecked: z.number().int().min(0),
+      })
+      .optional(),
+    /** Reproducibility manifest (no secrets). */
+    run: z
+      .object({
+        pipelineVersion: z.string(),
+        commit: z.string().optional(),
+        workflowRun: z.string().optional(),
+        config: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
+      })
+      .optional(),
     notice: z.string().optional(),
   })
   .superRefine((d, ctx) => {

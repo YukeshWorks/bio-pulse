@@ -1,6 +1,6 @@
 import { CATEGORY_BY_ID } from '../../shared/categories';
 import { EVIDENCE } from '../../shared/evidence';
-import type { AttributedText, BioRecord, DiscoveryAnalysis } from '../../shared/schema';
+import type { AttributedText, BioRecord, Classification, DiscoveryAnalysis } from '../../shared/schema';
 import type { MergedRecord } from './dedupe';
 import { excerpt, findSentence, formatAuthors, truncateWords } from './text';
 
@@ -31,9 +31,25 @@ export function sourceSummary(r: MergedRecord): AttributedText {
   return { text: 'No abstract or description is available in the source metadata; see the original source.', basis: 'unavailable' };
 }
 
-export function contextFor(categories: string[]): AttributedText {
-  const cat = CATEGORY_BY_ID[categories.find((c) => c !== 'patents-inventions') ?? categories[0]];
-  return { text: `General context (${cat?.name ?? 'biotechnology'}): ${cat?.context ?? 'See the original source.'}`, basis: 'template' };
+/**
+ * General field context for "why it matters". It is NOT a finding of the record. When the category
+ * assignment is low-confidence, a category-specific explanation is withheld so a weak keyword match
+ * cannot put misleading context (e.g. vaccine context on a bone-development paper) in front of readers.
+ */
+export function contextFor(categories: string[], classification?: Classification | null): AttributedText {
+  const primary = classification?.primary && classification.primary !== 'patents-inventions' ? classification.primary : categories.find((c) => c !== 'patents-inventions') ?? categories[0];
+  const cat = CATEGORY_BY_ID[primary];
+  if (classification?.confidence === 'low' || !cat) {
+    return {
+      text: 'General context: this record matched BioPulse’s biotechnology keywords only weakly, so no field-specific significance is stated. See the original source for its relevance.',
+      basis: 'template',
+    };
+  }
+  const terms = classification?.matched[primary]?.terms.slice(0, 3);
+  return {
+    text: `General context (${cat.name}${terms?.length ? `; matched: ${terms.join(', ')}` : ''}): ${cat.context}`,
+    basis: 'template',
+  };
 }
 
 export function limitationsFor(r: MergedRecord): AttributedText[] {
@@ -109,7 +125,7 @@ function whatNextTemplate(r: MergedRecord): AttributedText {
 }
 
 /** Six-question analysis for a top discovery, using only the record's own metadata and abstract. */
-export function deterministicAnalysis(r: MergedRecord, categories: string[]): DiscoveryAnalysis {
+export function deterministicAnalysis(r: MergedRecord, categories: string[], classification?: Classification | null): DiscoveryAnalysis {
   const abs = r.abstract ?? '';
   let developed: AttributedText | null = null;
   if (abs) {
@@ -127,7 +143,7 @@ export function deterministicAnalysis(r: MergedRecord, categories: string[]): Di
     whatHappened: whatHappened(r),
     whatWasDeveloped: developed ?? UNAVAILABLE('What was developed'),
     whatIsNew: newSentence ? { text: newSentence, basis: 'source' } : UNAVAILABLE('A comparison with previous approaches'),
-    whyImportant: contextFor(categories),
+    whyImportant: contextFor(categories, classification),
     // Mixed content: generic evidence caveats plus, when present, a quoted limitation from the abstract.
     limitations: {
       text: `${otherLim.map((l) => l.text).join(' ')}${sourceLim ? ` The abstract notes: “${sourceLim.text}”` : ''}`,

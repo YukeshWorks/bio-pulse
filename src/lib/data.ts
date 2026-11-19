@@ -55,18 +55,29 @@ export const useArchiveDay = (date: string | undefined) =>
 
 export type RangeKey = 'latest' | '7' | '30' | 'all';
 
-/** Records for a range of archived days, merged and de-duplicated by record id (newest day wins). */
-export async function loadRange(range: RangeKey): Promise<{ records: (BioRecord & { day: string })[]; days: string[] }> {
+/** Days fetched per step when browsing the archive (each day is one static JSON file). */
+export const ARCHIVE_PAGE_DAYS = 7;
+
+/**
+ * Records for a range of archived days, merged and de-duplicated by record id (newest day wins).
+ * Archive browsing is incremental: only the newest `maxDays` files of the range are fetched, so the
+ * browser never downloads the whole history to show the first page.
+ */
+export async function loadRange(
+  range: RangeKey,
+  maxDays = ARCHIVE_PAGE_DAYS,
+): Promise<{ records: (BioRecord & { day: string })[]; days: string[]; totalDays: number }> {
   if (range === 'latest') {
     const latest = await loadJson<DailyDataset>('latest.json');
-    return { records: latest.records.map((r) => ({ ...r, day: latest.date })), days: [latest.date] };
+    return { records: latest.records.map((r) => ({ ...r, day: latest.date })), days: [latest.date], totalDays: 1 };
   }
   const index = await loadJson<ArchiveIndex>('archive/index.json');
-  const days = (range === 'all' ? index.days : index.days.slice(0, Number(range))).map((d) => d.date);
+  const inRange = (range === 'all' ? index.days : index.days.slice(0, Number(range))).map((d) => d.date);
+  const days = inRange.slice(0, maxDays);
   const datasets = await Promise.all(days.map((d) => loadJson<DailyDataset>(`archive/${d}.json`).catch(() => null)));
   const byId = new Map<string, BioRecord & { day: string }>();
   datasets.forEach((ds) => {
     for (const r of ds?.records ?? []) if (!byId.has(r.id)) byId.set(r.id, { ...r, day: ds!.date });
   });
-  return { records: [...byId.values()], days };
+  return { records: [...byId.values()], days, totalDays: inRange.length };
 }

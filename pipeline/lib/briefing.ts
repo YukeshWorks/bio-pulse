@@ -40,8 +40,8 @@ export function deterministicBriefing(records: BioRecord[], top: BioRecord[]): B
   const b = top[1];
   const head =
     records.length === 1
-      ? `${capitalize(lowerName(leadCat))} produced today's only verified biotech update`
-      : `${capitalize(lowerName(leadCat))} led today's ${records.length} verified biotech updates`;
+      ? `${capitalize(lowerName(leadCat))} produced today's only new biotech record`
+      : `${capitalize(lowerName(leadCat))} led today's ${records.length} new biotech records`;
   const quote = (r: BioRecord, n: number) => `${PHRASE[r.evidence]} on “${stripTrailing(truncateWords(r.title, n))}”`;
   const fits = (s: string) => wordCount(s) <= BRIEFING_MAX_WORDS;
 

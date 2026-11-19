@@ -4,6 +4,7 @@ import {
   RunStatusSchema,
   SourcesFileSchema,
   type BioRecord,
+  type Classification,
   type DailyDataset,
   type Discovery,
   type RunStatus,
@@ -15,14 +16,14 @@ import { COLLECTORS } from './collectors';
 import type { PipelineConfig } from './config';
 import { runAi, type AiCaller } from './lib/ai';
 import { deterministicBriefing } from './lib/briefing';
-import { classify } from './lib/classify';
+import { classifyDetailed } from './lib/classify';
 import { addDays, istDate } from './lib/dates';
 import { dedupe, type MergedRecord } from './lib/dedupe';
 import { contextFor, deterministicAnalysis, limitationsFor, sourceSummary } from './lib/enrich';
 import type { HttpClient } from './lib/http';
 import { dedupeKeys, recordId } from './lib/ids';
 import type { Logger } from './lib/log';
-import { pickTop, scoreRecord } from './lib/rank';
+import { capBalanced, pickTop, scoreRecord } from './lib/rank';
 import { paths, readArchiveDay, readLatest, readStatus, rebuildArchiveIndex, writeJsonAtomic } from './lib/storage';
 import { checkUrlLive, validateRaw } from './lib/validate';
 import { SOURCE_META } from './sources-meta';
@@ -48,6 +49,8 @@ export interface PipelineResult {
   status: RunStatus;
   message: string;
 }
+
+export const PIPELINE_VERSION = '2.0.0';
 
 const SOURCE_NAMES: Record<SourceId, string> = Object.fromEntries(SOURCE_META.map((s) => [s.id, s.name])) as Record<SourceId, string>;
 
@@ -124,8 +127,12 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
   const reject = (sourceId: SourceId, reason: string) => {
     rejectedReasons[reason] = (rejectedReasons[reason] ?? 0) + 1;
     const s = statuses.get(sourceId);
-    if (s) s.rejected++;
+    if (s) {
+      s.rejected++;
+      s.rejectReasons = { ...s.rejectReasons, [reason]: (s.rejectReasons?.[reason] ?? 0) + 1 };
+    }
   };
+  const collected = raw.length;
   const valid: RawRecord[] = [];
   const checksByUrl = new Map<string, string[]>();
   for (const r of raw) {
@@ -155,19 +162,20 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
   });
 
   // 5. Classify into coverage categories; drop records that are not biotechnology-relevant.
-  const categorized: { rec: MergedRecord; categories: string[] }[] = [];
+  const categorized: { rec: MergedRecord; categories: string[]; classification: Classification | null }[] = [];
   for (const rec of fresh) {
-    const cats = classify(rec);
+    const { categories: cats, classification } = classifyDetailed(rec);
     if (cats.length === 0) {
       reject(rec.sourceId, 'not-biotech-relevant');
       continue;
     }
-    categorized.push({ rec, categories: cats });
+    categorized.push({ rec, categories: cats, classification });
   }
+  const metadataValidated = categorized.length;
 
   // 6. Build published records with deterministic, source-grounded text.
   const abstracts = new Map<string, string | undefined>();
-  let records: BioRecord[] = categorized.map(({ rec, categories }) => {
+  let records: BioRecord[] = categorized.map(({ rec, categories, classification }) => {
     const id = recordId(rec.identifiers, rec.url);
     abstracts.set(id, rec.abstract);
     const base = {
@@ -183,11 +191,12 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
       venue: rec.venue,
       identifiers: Object.fromEntries(Object.entries(rec.identifiers).filter(([, v]) => v)) as BioRecord['identifiers'],
       categories,
+      classification: classification ?? undefined,
       evidence: rec.evidence,
       evidenceNote: '',
       articleTypes: rec.articleTypes?.length ? rec.articleTypes : undefined,
       summary: sourceSummary(rec),
-      whyItMatters: contextFor(categories),
+      whyItMatters: contextFor(categories, classification),
       limitations: limitationsFor(rec),
       trial: rec.trial ? (({ interventionTypes: _omit, ...t }) => t)(rec.trial) : undefined,
       patent: rec.patent,
@@ -208,7 +217,32 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
   // Ids are unique after dedupe; guard anyway.
   records = [...new Map(records.map((r) => [r.id, r])).values()].sort((a, b) => b.score - a.score);
 
-  // 7. Live URL verification for the highest-ranked records. 404/410 → dropped.
+  // 8. Carry over same-day records from sources that failed in this run but succeeded earlier today.
+  const existingToday = await readArchiveDay(config.dataDir, runDate);
+  if (existingToday?.dataset === 'live') {
+    const failed = new Set([...statuses.values()].filter((s) => s.status === 'failed').map((s) => s.id));
+    const have = new Set(records.flatMap((r) => dedupeKeys(r.identifiers, r.url, r.title, r.evidence)));
+    const carried = existingToday.records.filter((r) => failed.has(r.source.id) && !dedupeKeys(r.identifiers, r.url, r.title, r.evidence).some((k) => have.has(k)));
+    if (carried.length) {
+      log.warn(`Carried over ${carried.length} records from this morning's run for failed source(s): ${[...failed].join(', ')}`);
+      records = [...records, ...carried].sort((a, b) => b.score - a.score);
+    }
+  }
+
+  // 9. Cap the daily volume with per-evidence quotas, so lower-weighted classes (preprints, trials,
+  //    patents) are not crowded out entirely by journal articles. Capped records are counted per source.
+  if (records.length > config.maxRecordsPerDay) {
+    const { kept, dropped } = capBalanced(records, config.maxRecordsPerDay);
+    rejectedReasons['daily-cap'] = dropped.length;
+    for (const r of dropped) {
+      const s = statuses.get(r.source.id);
+      if (s) s.capped = (s.capped ?? 0) + 1;
+    }
+    records = kept;
+  }
+
+  // 10a. Live URL check of the highest-ranked PUBLISHED records (subset, see verifyUrlLimit). 404/410 → dropped.
+  //      This checks link availability only; it is not scientific verification.
   if (config.verifyUrls && records.length) {
     const http = opts.urlHttp ?? opts.http;
     const toCheck = records.slice(0, config.verifyUrlLimit);
@@ -227,34 +261,19 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
     });
   }
 
-  // 8. Carry over same-day records from sources that failed in this run but succeeded earlier today.
-  const existingToday = await readArchiveDay(config.dataDir, runDate);
-  if (existingToday?.dataset === 'live') {
-    const failed = new Set([...statuses.values()].filter((s) => s.status === 'failed').map((s) => s.id));
-    const have = new Set(records.flatMap((r) => dedupeKeys(r.identifiers, r.url, r.title, r.evidence)));
-    const carried = existingToday.records.filter((r) => failed.has(r.source.id) && !dedupeKeys(r.identifiers, r.url, r.title, r.evidence).some((k) => have.has(k)));
-    if (carried.length) {
-      log.warn(`Carried over ${carried.length} records from this morning's run for failed source(s): ${[...failed].join(', ')}`);
-      records = [...records, ...carried].sort((a, b) => b.score - a.score);
-    }
-  }
-
-  // 9. Cap the daily volume (highest score first).
-  if (records.length > config.maxRecordsPerDay) {
-    rejectedReasons['daily-cap'] = records.length - config.maxRecordsPerDay;
-    records = records.slice(0, config.maxRecordsPerDay);
-  }
   for (const r of records) {
     const s = statuses.get(r.source.id);
     if (s) s.accepted++;
   }
+
+  const linkCount = (k: string) => records.filter((r) => r.verification.urlCheck === k).length;
 
   // 10. Top discoveries + one-sentence briefing (deterministic first, optional AI on top).
   const top = pickTop(records, 3, config.verifyUrls && config.requireVerifiedFeatured);
   const mergedById = new Map(categorized.map(({ rec }) => [recordId(rec.identifiers, rec.url), rec]));
   let topDiscoveries: Discovery[] = top.map((r, i) => {
     const m = mergedById.get(r.id);
-    return { recordId: r.id, rank: i + 1, analysis: m ? deterministicAnalysis(m, r.categories) : fallbackAnalysisFromRecord(r) };
+    return { recordId: r.id, rank: i + 1, analysis: m ? deterministicAnalysis(m, r.categories, r.classification) : fallbackAnalysisFromRecord(r) };
   });
   let briefing = deterministicBriefing(records, top);
   const ai = await runAi(config.ai, top, records.slice(0, config.ai.maxRecords), abstracts, opts.aiCaller);
@@ -291,7 +310,7 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
     message = 'All sources responded but no qualifying new records were found.';
   } else {
     outcome = 'published';
-    message = `Published ${records.length} verified records${failed.length ? `; ${failed.length} source(s) failed: ${failed.map((f) => f.id).join(', ')}` : ''}.`;
+    message = `Published ${records.length} metadata-validated records (${linkCount('ok') + linkCount('restricted')} links live-checked)${failed.length ? `; ${failed.length} source(s) failed: ${failed.map((f) => f.id).join(', ')}` : ''}.`;
   }
 
   let dataset: DailyDataset | null = null;
@@ -315,7 +334,32 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
       },
       sources: sourceStatuses,
       rejected: { count: Object.values(rejectedReasons).reduce((a, b) => a + b, 0), reasons: rejectedReasons },
-      ai: { enabled: config.ai.enabled, used: ai.used, model: ai.used ? config.ai.model : undefined, note: ai.note },
+      ai: { enabled: config.ai.enabled, used: ai.used, model: config.ai.enabled ? config.ai.model : undefined, note: ai.note, status: ai.status, failure: ai.failure },
+      verificationSummary: {
+        collected,
+        metadataValidated,
+        published: records.length,
+        linkOk: linkCount('ok'),
+        linkRestricted: linkCount('restricted'),
+        linkFailed: linkCount('failed'),
+        linkNotChecked: linkCount('unchecked'),
+      },
+      run: {
+        pipelineVersion: PIPELINE_VERSION,
+        commit: opts.env.GITHUB_SHA,
+        workflowRun: opts.env.GITHUB_RUN_ID ? `${opts.env.GITHUB_RUN_ID}/${opts.env.GITHUB_RUN_ATTEMPT ?? '1'}` : undefined,
+        config: {
+          lookbackDays: config.lookbackDays,
+          patentLookbackDays: config.patentLookbackDays,
+          seenWindowDays: config.seenWindowDays,
+          maxRecordsPerDay: config.maxRecordsPerDay,
+          verifyUrls: config.verifyUrls,
+          verifyUrlLimit: config.verifyUrlLimit,
+          preprintMaxPages: config.preprintMaxPages,
+          classification: 'keyword-rules-v2',
+          aiModel: config.ai.enabled ? config.ai.model : 'none',
+        },
+      },
       notice: outcome === 'published-empty' ? 'No qualifying updates were found for this date. No headline has been generated.' : undefined,
     };
     // Validate before anything is written; an invalid dataset never replaces good data.
@@ -329,9 +373,9 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
   }
 
   if (dataset) {
-    await writeJsonAtomic(p.archiveDay(runDate), dataset);
+    await writeJsonAtomic(p.archiveDay(runDate), dataset, { compact: true });
     await writeJsonAtomic(p.archiveIndex, await rebuildArchiveIndex(config.dataDir, now));
-    await writeJsonAtomic(p.latest, dataset);
+    await writeJsonAtomic(p.latest, dataset, { compact: true });
   }
 
   const status: RunStatus = {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { EVIDENCE_ORDER } from '../../shared/evidence';
-import { BriefingHero, CategoryNav, DiscoveryCard, StaleBanner, StatusStrip } from '../components/Home';
+import { BriefingHero, CategoryNav, CoverageBanner, DiscoveryCard, StaleBanner, StatusStrip, VerificationLine } from '../components/Home';
 import { EV_DOT } from '../components/Badges';
 import { RecordCard } from '../components/RecordCard';
 import { ErrorState, Loading } from '../components/States';
@@ -27,14 +27,15 @@ export function HomePage() {
       {data && (
         <>
           <BriefingHero data={data} />
+          <CoverageBanner data={data} />
 
           {data.topDiscoveries.length > 0 && (
             <section aria-labelledby="top-title">
               <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
                 <div>
-                  <p className="eyebrow">Ranked by evidence strength and metadata completeness</p>
+                  <p className="eyebrow">Evidence &amp; metadata rank — not a measure of scientific importance</p>
                   <h2 id="top-title" className="mt-1 text-xl font-semibold tracking-tight">
-                    Three most important updates
+                    Today&apos;s three highlighted updates
                   </h2>
                 </div>
                 <Link to="/about#ranking" className="text-xs text-fg-subtle hover:text-fg">
@@ -53,7 +54,7 @@ export function HomePage() {
           {data.records.length > 0 && (
             <section aria-labelledby="mix-title" className="card p-4 sm:p-5">
               <h2 id="mix-title" className="eyebrow">
-                Evidence mix · {data.stats.total} verified records
+                Evidence mix · {data.stats.total} published records
               </h2>
               <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-ink-700" role="img" aria-label="Evidence mix">
                 {EVIDENCE_ORDER.filter((e) => data.stats.byEvidence[e]).map((e) => (
@@ -68,6 +69,7 @@ export function HomePage() {
                   </li>
                 ))}
               </ul>
+              <VerificationLine data={data} />
             </section>
           )}
 

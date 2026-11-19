@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CATEGORIES } from '../../shared/categories';
 import { EVIDENCE_ORDER } from '../../shared/evidence';
 import type { EvidenceClass, SourceId } from '../../shared/schema';
-import { loadRange, useAsync, type RangeKey } from '../lib/data';
+import { ARCHIVE_PAGE_DAYS, loadRange, useAsync, type RangeKey } from '../lib/data';
 import { applyFilters, toggle, type FilterState, type SortKey } from '../lib/filters';
 import { EV_DOT } from './Badges';
 import { RecordCard } from './RecordCard';
@@ -61,7 +61,8 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
   const [f, update] = useFilterParams();
   const [limit, setLimit] = useState(30);
   const [showFilters, setShowFilters] = useState(false);
-  const state = useAsync(() => loadRange(f.range), [f.range]);
+  const [maxDays, setMaxDays] = useState(ARCHIVE_PAGE_DAYS);
+  const state = useAsync(() => loadRange(f.range, maxDays), [f.range, maxDays]);
 
   const effective: FilterState = {
     ...f,
@@ -91,7 +92,10 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
           <div className="grid grid-cols-2 gap-2">
             <label className="col-span-2 text-xs text-fg-subtle sm:col-span-1 lg:col-span-2">
               Dataset
-              <select className="input mt-1" value={f.range} onChange={(e) => update({ range: e.target.value as RangeKey })}>
+              <select className="input mt-1" value={f.range} onChange={(e) => {
+                  setMaxDays(ARCHIVE_PAGE_DAYS);
+                  update({ range: e.target.value as RangeKey });
+                }}>
                 {RANGES.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.label}
@@ -167,8 +171,20 @@ export function RecordExplorer({ lockedEvidence, lockedCategory, emptyHint }: { 
           <>
             <p className="mb-3 text-xs text-fg-subtle">
               {results.length} record{results.length === 1 ? '' : 's'}
-              {state.data.days.length > 1 ? ` across ${state.data.days.length} archived days` : state.data.days[0] ? ` · update of ${state.data.days[0]}` : ''}
+              {f.range !== 'latest'
+                ? ` across ${state.data.days.length} of ${state.data.totalDays} archived day${state.data.totalDays === 1 ? '' : 's'} loaded`
+                : state.data.days[0]
+                  ? ` · update of ${state.data.days[0]}`
+                  : ''}
             </p>
+            {f.range !== 'latest' && state.data.days.length < state.data.totalDays && (
+              <p className="mb-3 text-xs text-fg-subtle">
+                Search and filters apply to the loaded days only.{' '}
+                <button type="button" className="text-signal hover:text-fg" onClick={() => setMaxDays((d) => d + ARCHIVE_PAGE_DAYS)}>
+                  Load {Math.min(ARCHIVE_PAGE_DAYS, state.data.totalDays - state.data.days.length)} older day(s)
+                </button>
+              </p>
+            )}
             {results.length === 0 ? (
               <EmptyState title="No matching records">{emptyHint ?? 'Try widening the dataset range or clearing filters. BioPulse never fills empty results with placeholder content.'}</EmptyState>
             ) : (

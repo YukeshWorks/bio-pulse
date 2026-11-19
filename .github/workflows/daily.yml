@@ -33,6 +33,7 @@ jobs:
     timeout-minutes: 45
     outputs:
       outcome: ${{ steps.pipeline.outputs.outcome }}
+      pipeline_step: ${{ steps.pipeline.outcome }}
     steps:
       - uses: actions/checkout@v4
 
@@ -121,3 +122,14 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  alert:
+    name: Alert on preserved (stale) data
+    needs: [update, deploy]
+    if: always() && (needs.update.outputs.outcome == 'preserved-previous' || needs.update.outputs.pipeline_step == 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail visibly so the repository owner is notified
+        run: |
+          echo "::error title=BioPulse::No new data was published in this run; the previous dataset was preserved. Check the 'Fetch sources' step and status.json."
+          exit 1
