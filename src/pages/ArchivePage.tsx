@@ -6,6 +6,7 @@ import { PageHeader } from '../components/Layout';
 import { RecordCard } from '../components/RecordCard';
 import { EmptyState, ErrorState, Loading } from '../components/States';
 import { useArchiveDay, useArchiveIndex } from '../lib/data';
+import { Reveal } from '../lib/motion';
 import { formatDate, formatTimestamp } from '../lib/format';
 
 export function ArchivePage() {
@@ -21,7 +22,7 @@ export function ArchivePage() {
       {index.data && index.data.days.length > 0 && (
         <ol className="grid grid-cols-1 gap-3">
           {index.data.days.map((d, i) => (
-            <li key={d.date} className="animate-rise" style={{ animationDelay: `${Math.min(i, 10) * 25}ms` }}>
+            <Reveal as="li" key={d.date} delay={(i % 8) * 40}>
               <Link to={`/archive/${d.date}`} className="card card-hover flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="shrink-0 sm:w-40">
                   <p className="font-mono text-sm text-fg">{d.date}</p>
@@ -37,7 +38,7 @@ export function ArchivePage() {
                   <span className="font-mono text-xs text-fg-muted">{d.total} records</span>
                 </div>
               </Link>
-            </li>
+            </Reveal>
           ))}
         </ol>
       )}

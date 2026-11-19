@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { DATA_MODE } from '../lib/data';
 import { ViewToggle } from '../lib/view';
+import { BackToTop } from '../lib/motion';
 
 export function Logo({ className = '' }: { className?: string }) {
   return (
@@ -9,7 +10,7 @@ export function Logo({ className = '' }: { className?: string }) {
       <svg viewBox="0 0 32 32" className="h-8 w-8 shrink-0" aria-hidden>
         <rect width="32" height="32" rx="9" className="fill-ink-800" />
         <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" fill="none" className="stroke-ink-500" />
-        <path d="M4 17h5l2.5-6 4 12 3-9 2 3H28" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="text-accent" />
+        <path d="M4 17h5l2.5-6 4 12 3-9 2 3H28" pathLength={1} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="draw-path text-accent" />
       </svg>
       <span className="leading-none">
         <span className="block text-[17px] font-semibold tracking-tight text-fg">
@@ -70,7 +71,7 @@ function Header() {
         </button>
       </div>
       {open && (
-        <nav id="mobile-nav" className="border-t border-ink-600/60 px-4 pb-4 pt-2 lg:hidden" aria-label="Main">
+        <nav id="mobile-nav" className="animate-menu border-t border-ink-600/60 px-4 pb-4 pt-2 lg:hidden" aria-label="Main">
           <div className="mb-3">
             <ViewToggle />
           </div>
@@ -145,9 +146,13 @@ export function Layout({ children }: { children: ReactNode }) {
       <DemoBanner />
       <Header />
       <main id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 pt-6 sm:px-6 sm:pt-8">
-        {children}
+        {/* Keyed by route so each page change fades in. */}
+        <div key={loc.pathname} className="animate-page-in">
+          {children}
+        </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }

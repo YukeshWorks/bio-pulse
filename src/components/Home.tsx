@@ -4,6 +4,7 @@ import { CATEGORY_BY_ID } from '../../shared/categories';
 import type { BioRecord, DailyDataset, Discovery, RunStatus, TextBasis } from '../../shared/schema';
 import { formatDate, formatTimestamp, freshness, relativeAge, todayInIst } from '../lib/format';
 import { useView } from '../lib/view';
+import { PulseLine, useReveal, WordReveal } from '../lib/motion';
 import { BasisLabel, EvidenceBadge } from './Badges';
 import { RecordDetails, SourceLink } from './RecordCard';
 
@@ -58,15 +59,21 @@ export function BriefingHero({ data }: { data: DailyDataset }) {
   const byId = new Map(data.records.map((r) => [r.id, r]));
   const cited = data.briefing.citations.map((id) => byId.get(id)).filter((r): r is BioRecord => Boolean(r));
   return (
-    <section aria-labelledby="briefing-title" className="card relative overflow-hidden p-5 sm:p-8 animate-rise">
+    <section aria-labelledby="briefing-title" className="card relative overflow-hidden p-5 sm:p-8">
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent/10 blur-3xl" aria-hidden />
       <div className="relative">
-        <h2 id="briefing-title" className="text-sm font-semibold text-accent">
-          Today in biotech, in one sentence
-        </h2>
+        <div className="flex items-center gap-4">
+          <h2 id="briefing-title" className="shrink-0 text-sm font-semibold text-accent">
+            Today in biotech, in one sentence
+          </h2>
+          {/* Decorative heartbeat on its own row so it never overlaps text. */}
+          <PulseLine className="h-8 w-36 min-w-0 shrink text-accent/80 sm:w-56" />
+        </div>
         {data.briefing.sentence ? (
           <>
-            <p className="mt-3 max-w-4xl text-[21px] font-medium leading-snug text-fg sm:text-[26px]">{data.briefing.sentence}</p>
+            <p className="mt-3 max-w-4xl text-[21px] font-medium leading-snug text-fg sm:text-[26px]">
+              <WordReveal text={data.briefing.sentence} />
+            </p>
             <p className="mt-4 text-sm text-fg-subtle">Based on: </p>
             <ol className="mt-1 space-y-1">
               {cited.map((r, i) => (
@@ -118,8 +125,9 @@ export function DiscoveryCard({ d, r }: { d: Discovery; r: BioRecord }) {
   const { detailed } = useView();
   const [toggled, setToggled] = useState<boolean | null>(null);
   const open = toggled ?? detailed;
+  const reveal = useReveal<HTMLElement>((d.rank - 1) * 110);
   return (
-    <article className="card flex flex-col gap-2.5 p-5 animate-rise" style={{ animationDelay: `${d.rank * 70}ms` }}>
+    <article ref={reveal.ref} className={`card card-hover flex flex-col gap-2.5 p-5 ${reveal.className}`} style={reveal.style}>
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-semibold text-fg-subtle">Story {d.rank}</span>
         <EvidenceBadge evidence={r.evidence} patent={r.patent} />
@@ -135,14 +143,14 @@ export function DiscoveryCard({ d, r }: { d: Discovery; r: BioRecord }) {
       </p>
       <p className={`text-[15px] leading-relaxed text-fg-muted ${open ? '' : 'line-clamp-3'}`}>{r.summary.text}</p>
       {open && (
-        <>
+        <div className="animate-expand space-y-3">
           <dl className="mt-1 space-y-3">
             {QUESTIONS.map(([k, q]) => (
               <Answer key={k} q={q} text={d.analysis[k].text} basis={d.analysis[k].basis} showBasis={detailed} />
             ))}
           </dl>
           <RecordDetails r={r} />
-        </>
+        </div>
       )}
       <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-1">
         <SourceLink r={r} />
@@ -166,15 +174,23 @@ function Answer({ q, text, basis, showBasis }: { q: string; text: string; basis:
 }
 
 /** Compact one-line list of further records for the homepage. */
-export function RecordRow({ r }: { r: BioRecord }) {
+export function RecordRow({ r, index = 0 }: { r: BioRecord; index?: number }) {
+  const reveal = useReveal<HTMLLIElement>(index * 45);
   return (
-    <li className="flex flex-col gap-1 border-b border-ink-600/50 py-3 last:border-0 sm:flex-row sm:items-baseline sm:gap-4">
+    <li
+      ref={reveal.ref}
+      style={reveal.style}
+      className={`group flex flex-col gap-1 border-b border-ink-600/50 py-3 transition-colors last:border-0 hover:bg-ink-800/40 sm:flex-row sm:items-baseline sm:gap-4 sm:rounded-lg sm:px-2 ${reveal.className}`}
+    >
       <span className="shrink-0 sm:w-56">
         <EvidenceBadge evidence={r.evidence} patent={r.patent} />
       </span>
       <span className="min-w-0 flex-1">
         <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-[15px] font-medium leading-snug text-fg hover:text-signal">
           {r.title}
+          <span aria-hidden className="ml-1 inline-block text-signal opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100">
+            ↗
+          </span>
         </a>
         <span className="block text-xs text-fg-subtle">
           {r.source.name} · {formatDate(r.date)}
@@ -189,7 +205,7 @@ export function CategoryNav({ counts }: { counts: Record<string, number> }) {
   return (
     <div className="flex flex-wrap gap-2">
       {ids.map((id) => (
-        <Link key={id} to={`/categories/${id}`} className="rounded-full border border-ink-600 bg-ink-850 px-3 py-1.5 text-sm text-fg-muted hover:border-accent/60 hover:text-fg">
+        <Link key={id} to={`/categories/${id}`} className="rounded-full border border-ink-600 bg-ink-850 px-3 py-1.5 text-sm text-fg-muted transition duration-200 hover:-translate-y-0.5 hover:border-accent/60 hover:text-fg">
           {CATEGORY_BY_ID[id].name} <span className="text-fg-subtle">{counts[id]}</span>
         </Link>
       ))}

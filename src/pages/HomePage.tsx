@@ -5,6 +5,7 @@ import { BriefingHero, CategoryNav, CoverageBanner, DiscoveryCard, RecordRow, St
 import { ErrorState, Loading } from '../components/States';
 import { useLatest, useStatus } from '../lib/data';
 import { useView } from '../lib/view';
+import { CountUp, useInView } from '../lib/motion';
 
 /**
  * Homepage. Simple view: date + freshness, the one-sentence briefing, three top stories and a short
@@ -61,12 +62,12 @@ export function HomePage() {
                   Also new today
                 </h2>
                 <Link to="/latest" className="link text-sm">
-                  See all {data.records.length} →
+                  See all <CountUp value={data.records.length} /> →
                 </Link>
               </div>
               <ul>
-                {more.map((r) => (
-                  <RecordRow key={r.id} r={r} />
+                {more.map((r, i) => (
+                  <RecordRow key={r.id} r={r} index={i} />
                 ))}
               </ul>
             </section>
@@ -84,11 +85,7 @@ export function HomePage() {
               <h2 id="mix-title" className="eyebrow">
                 Evidence mix · {data.stats.total} published records
               </h2>
-              <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-ink-700" role="img" aria-label="Evidence mix">
-                {EVIDENCE_ORDER.filter((e) => data.stats.byEvidence[e]).map((e) => (
-                  <span key={e} className={EV_DOT[e]} style={{ width: `${(100 * data.stats.byEvidence[e]) / data.stats.total}%` }} title={`${e}: ${data.stats.byEvidence[e]}`} />
-                ))}
-              </div>
+              <EvidenceBar byEvidence={data.stats.byEvidence} total={data.stats.total} />
               <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-fg-muted">
                 {EVIDENCE_ORDER.filter((e) => data.stats.byEvidence[e]).map((e) => (
                   <li key={e} className="flex items-center gap-1.5">
@@ -120,6 +117,23 @@ export function HomePage() {
           </p>
         </>
       )}
+    </div>
+  );
+}
+
+/** Evidence mix bar: segments grow from zero when the bar scrolls into view. */
+function EvidenceBar({ byEvidence, total }: { byEvidence: Record<string, number>; total: number }) {
+  const [ref, visible] = useInView<HTMLDivElement>();
+  return (
+    <div ref={ref} className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-ink-700" role="img" aria-label="Evidence mix">
+      {EVIDENCE_ORDER.filter((e) => byEvidence[e]).map((e, i) => (
+        <span
+          key={e}
+          className={`${EV_DOT[e]} transition-[width] duration-700 ease-out`}
+          style={{ width: visible ? `${(100 * byEvidence[e]) / total}%` : '0%', transitionDelay: `${i * 80}ms` }}
+          title={`${e}: ${byEvidence[e]}`}
+        />
+      ))}
     </div>
   );
 }

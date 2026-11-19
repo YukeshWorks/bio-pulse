@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { BioRecord } from '../../shared/schema';
 import { authorsLine, formatDate } from '../lib/format';
 import { useView } from '../lib/view';
+import { useReveal } from '../lib/motion';
 import { BasisLabel, CategoryChip, EvidenceBadge, PatentNotice, PreprintWarning, TrialNotice } from './Badges';
 
 const DATE_LABEL: Record<BioRecord['dateType'], string> = {
@@ -57,9 +58,9 @@ export function RecordMeta({ r }: { r: BioRecord }) {
 
 export function SourceLink({ r, className = '' }: { r: BioRecord; className?: string }) {
   return (
-    <a href={r.url} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-1 text-sm font-medium text-signal hover:text-fg ${className}`}>
+    <a href={r.url} target="_blank" rel="noopener noreferrer" className={`group/link inline-flex items-center gap-1 text-sm font-medium text-signal hover:text-fg ${className}`}>
       Read original on {r.source.name}
-      <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+      <svg viewBox="0 0 20 20" className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" fill="currentColor" aria-hidden>
         <path d="M11 3h6v6h-2V6.41l-6.3 6.3-1.4-1.42L13.58 5H11V3zM5 5h4v2H5v8h8v-4h2v6H3V5h2z" />
       </svg>
     </a>
@@ -172,8 +173,9 @@ export function RecordCard({ r, day, index = 0 }: { r: BioRecord; day?: string; 
   const { detailed } = useView();
   const [toggled, setToggled] = useState<boolean | null>(null);
   const open = toggled ?? detailed;
+  const reveal = useReveal<HTMLElement>((index % 6) * 50);
   return (
-    <article className="card card-hover flex flex-col gap-2.5 p-4 animate-rise sm:p-5" style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}>
+    <article ref={reveal.ref} className={`card card-hover flex flex-col gap-2.5 p-4 sm:p-5 ${reveal.className}`} style={reveal.style}>
       <div className="flex flex-wrap items-center gap-2">
         <EvidenceBadge evidence={r.evidence} patent={r.patent} />
         {day && <span className="ml-auto text-xs text-fg-subtle">archived {day}</span>}
@@ -194,7 +196,11 @@ export function RecordCard({ r, day, index = 0 }: { r: BioRecord; day?: string; 
         )}
         {r.summary.text}
       </p>
-      {open && <RecordDetails r={r} />}
+      {open && (
+        <div className="animate-expand">
+          <RecordDetails r={r} />
+        </div>
+      )}
       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
         <SourceLink r={r} />
         <button type="button" onClick={() => setToggled(!open)} className="text-sm font-medium text-fg-subtle hover:text-fg" aria-expanded={open}>
