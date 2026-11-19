@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-18T19:11:44.231Z",
+  "updatedAt": "2026-11-19T09:00:06.124Z",
   "sources": [
     {
       "id": "pubmed",
@@ -21,10 +21,10 @@
         "id": "pubmed",
         "name": "PubMed (NCBI E-utilities)",
         "status": "ok",
-        "fetched": 179,
-        "accepted": 110,
+        "fetched": 189,
+        "accepted": 115,
         "rejected": 0,
-        "durationMs": 15243
+        "durationMs": 10901
       }
     },
     {
@@ -45,11 +45,12 @@
       "lastStatus": {
         "id": "europepmc",
         "name": "Europe PMC",
-        "status": "ok",
-        "fetched": 150,
-        "accepted": 84,
-        "rejected": 12,
-        "durationMs": 22767
+        "status": "failed",
+        "fetched": 0,
+        "accepted": 80,
+        "rejected": 0,
+        "durationMs": 4813,
+        "error": "HTTP 503 for https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28%22CRISPR%22+OR+%22genome+editing%22+OR+%22base+editing%22+OR+%22prime+editing%22+OR+%22gene+therapy%22+OR+%22gene+regulation%22+OR+%22RNA+biology%22+OR+%22epigenetic+regulation%22+OR+%22chromatin%22+OR+%22microbiome%22+OR"
       }
     },
     {
@@ -73,8 +74,8 @@
         "fetched": 203,
         "accepted": 0,
         "rejected": 41,
-        "durationMs": 9403,
-        "note": "stopped after 10 pages (300/592 postings scanned)"
+        "durationMs": 80840,
+        "note": "stopped after 10 pages (300/678 postings scanned)"
       }
     },
     {
@@ -95,10 +96,10 @@
         "id": "medrxiv",
         "name": "medRxiv",
         "status": "ok",
-        "fetched": 10,
+        "fetched": 24,
         "accepted": 0,
-        "rejected": 1,
-        "durationMs": 2813
+        "rejected": 5,
+        "durationMs": 13274
       }
     },
     {
@@ -122,7 +123,7 @@
         "fetched": 17,
         "accepted": 5,
         "rejected": 0,
-        "durationMs": 382
+        "durationMs": 347
       }
     },
     {
@@ -143,10 +144,10 @@
         "id": "fda",
         "name": "U.S. FDA (official RSS)",
         "status": "ok",
-        "fetched": 11,
+        "fetched": 13,
         "accepted": 0,
-        "rejected": 11,
-        "durationMs": 289
+        "rejected": 13,
+        "durationMs": 296
       }
     },
     {
@@ -168,9 +169,9 @@
         "name": "European Medicines Agency (official RSS)",
         "status": "ok",
         "fetched": 1,
-        "accepted": 1,
+        "accepted": 0,
         "rejected": 0,
-        "durationMs": 299
+        "durationMs": 967
       }
     },
     {
