@@ -125,3 +125,23 @@ describe('simple by default, detailed on demand', () => {
     expect(screen.queryByText(/Limitations/)).toBeNull();
   });
 });
+
+describe('motion never hides content', () => {
+  it('keeps the full briefing sentence as one string for screen readers', async () => {
+    const { WordReveal } = await import('../src/lib/motion');
+    const { container } = render(<WordReveal text="Today's top biotech story is a test." />);
+    expect(container.querySelector('.sr-only')?.textContent).toBe("Today's top biotech story is a test.");
+    expect(container.querySelectorAll('[aria-hidden="true"] .animate-word').length).toBe(7);
+  });
+  it('shows final values and visible content when IntersectionObserver is unavailable', async () => {
+    const { CountUp, Reveal } = await import('../src/lib/motion');
+    const { container } = render(
+      <>
+        <CountUp value={200} />
+        <Reveal>visible</Reveal>
+      </>,
+    );
+    expect(container.textContent).toContain('200');
+    expect(container.querySelector('.reveal-hidden')).toBeNull();
+  });
+});

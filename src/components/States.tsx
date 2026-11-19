@@ -6,7 +6,7 @@ export function Loading({ label = 'Loading data…' }: { label?: string }) {
     <div className="space-y-3" role="status" aria-live="polite">
       <span className="sr-only">{label}</span>
       {[0, 1, 2].map((i) => (
-        <div key={i} className="card h-28 animate-pulse bg-ink-850/60" />
+        <div key={i} className="skeleton h-28 rounded-2xl border border-ink-600/70" style={{ animationDelay: `${i * 120}ms` }} />
       ))}
     </div>
   );

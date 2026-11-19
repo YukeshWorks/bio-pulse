@@ -36,14 +36,20 @@ export const useView = () => useContext(ViewContext);
 export function ViewToggle() {
   const { mode, setMode } = useView();
   return (
-    <div className="inline-flex rounded-lg border border-ink-600 p-0.5 text-[13px]" role="group" aria-label="Reading mode">
+    <div className="relative inline-grid grid-cols-2 rounded-lg border border-ink-600 p-0.5 text-[13px]" role="group" aria-label="Reading mode">
+      {/* Sliding indicator behind the active option. */}
+      <span
+        aria-hidden
+        className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-md bg-ink-600 transition-transform duration-300 ease-out"
+        style={{ transform: mode === 'detailed' ? 'translateX(100%)' : 'translateX(0)' }}
+      />
       {(['simple', 'detailed'] as const).map((m) => (
         <button
           key={m}
           type="button"
           aria-pressed={mode === m}
           onClick={() => setMode(m)}
-          className={`rounded-md px-2.5 py-1 font-medium capitalize transition-colors ${mode === m ? 'bg-ink-600 text-fg' : 'text-fg-muted hover:text-fg'}`}
+          className={`relative rounded-md px-3 py-1 font-medium capitalize transition-colors duration-300 ${mode === m ? 'text-fg' : 'text-fg-muted hover:text-fg'}`}
         >
           {m}
         </button>
