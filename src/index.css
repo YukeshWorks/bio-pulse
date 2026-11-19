@@ -13,9 +13,9 @@
   --color-ink-600: #1e3152;
   --color-ink-500: #2b4268;
 
-  --color-fg: #e7eef9;
-  --color-fg-muted: #9fb0cc;
-  --color-fg-subtle: #6f82a3;
+  --color-fg: #f1f5fb;
+  --color-fg-muted: #c3cfe2;
+  --color-fg-subtle: #94a5c2;
 
   --color-accent: #2dd4bf;
   --color-accent-soft: #134e4a;
@@ -61,7 +61,7 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-ink-900 text-fg font-sans antialiased;
+    @apply bg-ink-900 text-fg font-sans antialiased text-[16px] leading-relaxed;
     background-image:
       radial-gradient(1200px 500px at 85% -10%, rgb(45 212 191 / 0.07), transparent 60%),
       radial-gradient(900px 400px at -10% 10%, rgb(125 211 252 / 0.06), transparent 60%);

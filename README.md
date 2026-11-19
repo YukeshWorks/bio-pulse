@@ -25,7 +25,9 @@ BioPulse is a static website plus an automated daily pipeline that tracks biotec
 | **Daily Archive** | Every archived day, with its briefing, top discoveries and records |
 | **About & Sources** | Methodology, evidence definitions, text-provenance labels, ranking formula, live source status from the last run, and known limitations |
 
-Every piece of text has a **provenance label**:
+The site opens in a **Simple** view: one plain sentence, three top stories with plain labels such as "Peer-reviewed study" or "Preprint · not peer-reviewed", and a short list of other new items. Each story has a **More details** button. The **Simple / Detailed** switch in the header shows everything below on every page: provenance labels, source health, verification counts and the full evidence breakdown.
+
+In the Detailed view, every piece of text has a **provenance label**:
 
 | Label | Meaning |
 |---|---|
@@ -214,6 +216,8 @@ A preserved-previous outcome still redeploys, so the site can show the failure n
 - GitHub disables scheduled workflows after 60 days without repository activity. The daily data commits normally prevent this.
 
 ## Changelog
+
+- **v2.1:** readability. Simple view by default with plain-language labels, details on demand, a Simple/Detailed switch, higher-contrast text, shorter menu names, simpler filters and a plainer daily sentence.
 
 - **v2 (pipeline 2.0.0):** response to the 19 Nov 2026 audit. Changes: confidence-rated classification, honest verification counters, balanced daily cap (preprints were being cut entirely), FDA http-link fix, per-source health, AI status, incremental archive loading, run manifest, and an alert on preserved data. Details, root causes and test results are in [`docs/upgrade-v2.md`](docs/upgrade-v2.md).
 

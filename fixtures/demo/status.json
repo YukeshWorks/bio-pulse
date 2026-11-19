@@ -14,7 +14,7 @@
       "fetched": 11,
       "accepted": 10,
       "rejected": 1,
-      "durationMs": 6,
+      "durationMs": 8,
       "rejectReasons": {
         "not-biotech-relevant": 1
       }
@@ -62,7 +62,7 @@
       "fetched": 3,
       "accepted": 1,
       "rejected": 2,
-      "durationMs": 2,
+      "durationMs": 3,
       "note": "FDA What's New: Vaccines, Blood & Biologics: feed parsed but contained no items",
       "rejectReasons": {
         "url-host-not-allowed": 1,
@@ -85,7 +85,7 @@
       "fetched": 1,
       "accepted": 1,
       "rejected": 0,
-      "durationMs": 2
+      "durationMs": 3
     },
     {
       "id": "company",
