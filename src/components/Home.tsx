@@ -7,6 +7,7 @@ import { useView } from '../lib/view';
 import { PulseLine, useReveal, WordReveal } from '../lib/motion';
 import { BasisLabel, EvidenceBadge } from './Badges';
 import { RecordDetails, SourceLink } from './RecordCard';
+import { RecordActions, SaveButton } from './Actions';
 
 /** One plain line: today's date and how fresh the data is. Technical detail only in Detailed mode. */
 export function StatusStrip({ data, status }: { data: DailyDataset | null; status: RunStatus | null }) {
@@ -152,11 +153,12 @@ export function DiscoveryCard({ d, r }: { d: Discovery; r: BioRecord }) {
           <RecordDetails r={r} />
         </div>
       )}
-      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-1">
+      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
         <SourceLink r={r} />
         <button type="button" onClick={() => setToggled(!open)} className="text-sm font-medium text-fg-subtle hover:text-fg" aria-expanded={open}>
           {open ? 'Less' : 'More details'}
         </button>
+        <RecordActions r={r} />
       </div>
     </article>
   );
@@ -195,6 +197,9 @@ export function RecordRow({ r, index = 0 }: { r: BioRecord; index?: number }) {
         <span className="block text-xs text-fg-subtle">
           {r.source.name} · {formatDate(r.date)}
         </span>
+      </span>
+      <span className="shrink-0 self-start sm:self-center">
+        <SaveButton r={r} compact />
       </span>
     </li>
   );

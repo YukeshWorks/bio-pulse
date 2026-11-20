@@ -98,6 +98,9 @@ jobs:
           echo "::error title=BioPulse::Could not push data commit after 4 attempts."
           exit 1
 
+      - name: Build RSS feed from the archive
+        run: npm run feed
+
       - name: Build site
         run: npm run build
 

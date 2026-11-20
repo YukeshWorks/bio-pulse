@@ -24,7 +24,8 @@ import type { HttpClient } from './lib/http';
 import { dedupeKeys, recordId } from './lib/ids';
 import type { Logger } from './lib/log';
 import { capBalanced, pickTop, scoreRecord } from './lib/rank';
-import { paths, readArchiveDay, readLatest, readStatus, rebuildArchiveIndex, writeJsonAtomic } from './lib/storage';
+import { buildFeed, siteUrl } from './lib/feed';
+import { paths, readArchiveDay, writeTextAtomic, readLatest, readStatus, rebuildArchiveIndex, writeJsonAtomic } from './lib/storage';
 import { checkUrlLive, validateRaw } from './lib/validate';
 import { SOURCE_META } from './sources-meta';
 import type { Collector, CollectorContext, RawRecord } from './types';
@@ -376,6 +377,13 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
     await writeJsonAtomic(p.archiveDay(runDate), dataset, { compact: true });
     await writeJsonAtomic(p.archiveIndex, await rebuildArchiveIndex(config.dataDir, now));
     await writeJsonAtomic(p.latest, dataset, { compact: true });
+    // RSS feed of the last 14 published days (free subscription for readers).
+    const feedDays: DailyDataset[] = [];
+    for (let i = 0; i < 14; i++) {
+      const d = i === 0 ? dataset : await readArchiveDay(config.dataDir, addDays(runDate, -i));
+      if (d) feedDays.push(d);
+    }
+    await writeTextAtomic(p.feed, buildFeed(feedDays, siteUrl(opts.env), now));
   }
 
   const status: RunStatus = {

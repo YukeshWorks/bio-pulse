@@ -241,6 +241,8 @@ export const ArchiveIndexSchema = z.object({
       date: isoDate,
       total: z.number().int().min(0),
       byEvidence: z.record(z.string(), z.number().int()),
+      /** Records per primary field (optional; added in v2.4 for trend lines). */
+      byCategory: z.record(z.string(), z.number().int()).optional(),
       briefing: z.string().nullable(),
     }),
   ),

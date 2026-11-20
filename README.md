@@ -217,6 +217,16 @@ A preserved-previous outcome still redeploys, so the site can show the failure n
 
 ## Changelog
 
+- **v2.4:** reader features, all free and private.
+  - **Save** papers to a reading list and **export** it for Zotero, Mendeley or EndNote (RIS, BibTeX, text).
+  - **Cite** and **Share** buttons on every story.
+  - **Follow topics** to get a personal **For you** section on the homepage.
+  - Tap any evidence label for a plain **"What does this mean?"** explanation.
+  - A **Today by field** chart, with weekly trend lines once there are 3 or more days of history.
+  - A free daily **RSS feed** (`data/feed.xml`).
+  - Press **"/"** to search.
+  - Saved papers and topics stay in the reader's browser.
+
 - **v2.3:** **Search everywhere** page (`/#/search`) plus a homepage search box. It runs one live query across Europe PMC, PubMed, ClinicalTrials.gov and OpenAlex (free, no keys), merges duplicates and labels each result honestly. See [`docs/search-options.md`](docs/search-options.md) for free and paid source options.
 - **v2.2:** purposeful motion: scroll reveal, word-by-word briefing, heartbeat line, hover feedback, smooth details, reduced-motion support.
 

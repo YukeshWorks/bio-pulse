@@ -21,7 +21,8 @@
     "validate:data": "tsx pipeline/validate-data.ts",
     "verify:dist": "node scripts/verify-dist.mjs",
     "demo:generate": "tsx scripts/generate-demo.ts",
-    "test:all": "npm run typecheck && npm test && npm run build && npm run verify:dist && npm run test:e2e"
+    "test:all": "npm run typecheck && npm test && npm run build && npm run verify:dist && npm run test:e2e",
+    "feed": "tsx pipeline/build-feed.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

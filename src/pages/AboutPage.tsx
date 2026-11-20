@@ -136,6 +136,21 @@ export function AboutPage() {
           )}
         </Section>
 
+        <Section id="subscribe" title="Follow BioPulse for free">
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>
+              <a className="link" href={`${import.meta.env.BASE_URL}data/feed.xml`}>
+                RSS feed
+              </a>{' '}
+              — the daily sentence and top stories. Paste the link into any news reader (e.g. Feedly, Inoreader, NetNewsWire).
+            </li>
+            <li>By e-mail: paste the RSS link into a free RSS-to-email service to get each day’s briefing in your inbox.</li>
+            <li>
+              <span className="text-fg">Saved</span> and <span className="text-fg">topics you follow</span> stay in your browser only — no account, nothing uploaded.
+            </li>
+          </ul>
+        </Section>
+
         <Section title="Integrity rules">
           <ul className="list-disc space-y-1.5 pl-5">
             <li>No invented authors, dates, DOIs, patent numbers, findings or references. Missing fields are shown as missing.</li>
