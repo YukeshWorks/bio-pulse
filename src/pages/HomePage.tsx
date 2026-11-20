@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EVIDENCE, EVIDENCE_ORDER } from '../../shared/evidence';
 import { EV_DOT } from '../components/Badges';
-import { BriefingHero, CategoryNav, CoverageBanner, DiscoveryCard, RecordRow, StaleBanner, StatusStrip, VerificationLine } from '../components/Home';
+import { BriefingHero, CoverageBanner, DiscoveryCard, RecordRow, StaleBanner, StatusStrip, VerificationLine } from '../components/Home';
 import { ErrorState, Loading } from '../components/States';
-import { useLatest, useStatus } from '../lib/data';
+import { useArchiveIndex, useLatest, useStatus } from '../lib/data';
+import { FieldChart, ForYou } from '../components/Insights';
 import { useView } from '../lib/view';
 import { CountUp, useInView } from '../lib/motion';
 
@@ -16,6 +17,7 @@ import { CountUp, useInView } from '../lib/motion';
 export function HomePage() {
   const latest = useLatest();
   const status = useStatus();
+  const archive = useArchiveIndex();
   const { detailed } = useView();
   const data = latest.data;
   const byId = new Map(data?.records.map((r) => [r.id, r]) ?? []);
@@ -57,6 +59,8 @@ export function HomePage() {
             </section>
           )}
 
+          <ForYou records={data.records} />
+
           {more.length > 0 && (
             <section aria-labelledby="latest-title" className="card p-4 sm:p-6">
               <div className="mb-1 flex items-end justify-between gap-2">
@@ -75,12 +79,7 @@ export function HomePage() {
             </section>
           )}
 
-          <section aria-labelledby="cat-title">
-            <h2 id="cat-title" className="mb-3 text-xl font-semibold tracking-tight">
-              Browse by field
-            </h2>
-            <CategoryNav counts={data.stats.byCategory} />
-          </section>
+          <FieldChart data={data} index={archive.data} />
 
           {detailed && data.records.length > 0 && (
             <section aria-labelledby="mix-title" className="card p-4 sm:p-5">
@@ -115,7 +114,12 @@ export function HomePage() {
             <Link to="/about" className="link">
               How BioPulse works
             </Link>
-            {!detailed && ' · Switch to Detailed view (top right) for source health and evidence labels.'}
+            {' · '}
+            <a href={`${import.meta.env.BASE_URL}data/feed.xml`} className="link">
+              Subscribe (RSS)
+            </a>
+            {' · Tip: press “/” to search.'}
+            {!detailed && ' Switch to Detailed view (top right) for source health and evidence labels.'}
           </p>
         </>
       )}

@@ -11,6 +11,14 @@ export async function writeJsonAtomic(file: string, data: unknown, opts: { compa
   await fs.rename(tmp, file);
 }
 
+/** Write text atomically (temp file + rename). */
+export async function writeTextAtomic(file: string, text: string): Promise<void> {
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
+  await fs.writeFile(tmp, text, 'utf8');
+  await fs.rename(tmp, file);
+}
+
 export async function readJson<T>(file: string, schema?: ZodType<T>): Promise<T | null> {
   try {
     const raw = JSON.parse(await fs.readFile(file, 'utf8')) as unknown;
@@ -28,6 +36,7 @@ export const paths = (dataDir: string) => ({
   sources: path.join(dataDir, 'sources.json'),
   archiveDir: path.join(dataDir, 'archive'),
   archiveIndex: path.join(dataDir, 'archive', 'index.json'),
+  feed: path.join(dataDir, 'feed.xml'),
   archiveDay: (date: string) => path.join(dataDir, 'archive', `${date}.json`),
 });
 
@@ -61,7 +70,12 @@ export async function rebuildArchiveIndex(dataDir: string, now: Date): Promise<A
   for (const date of (await listArchiveDates(dataDir)).reverse()) {
     const d = await readArchiveDay(dataDir, date);
     if (!d || d.dataset !== 'live') continue;
-    days.push({ date, total: d.stats.total, byEvidence: d.stats.byEvidence, briefing: d.briefing.sentence });
+    const byCategory: Record<string, number> = {};
+    for (const r of d.records) {
+      const primary = r.classification?.primary ?? r.categories.find((c) => c !== 'patents-inventions') ?? r.categories[0];
+      byCategory[primary] = (byCategory[primary] ?? 0) + 1;
+    }
+    days.push({ date, total: d.stats.total, byEvidence: d.stats.byEvidence, byCategory, briefing: d.briefing.sentence });
   }
   const index: ArchiveIndex = { schemaVersion: 1, updatedAt: now.toISOString(), days };
   ArchiveIndexSchema.parse(index);

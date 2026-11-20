@@ -6,6 +6,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ArchiveDayPage, ArchivePage } from './pages/ArchivePage';
 import { HomePage } from './pages/HomePage';
 import { SearchPage } from './pages/SearchPage';
+import { SavedPage } from './pages/SavedPage';
 import { CategoriesPage, CategoryPage, LatestPage, PapersPage, PatentsPage, TrialsPage } from './pages/ListPages';
 
 /** Hash routing keeps deep links working on GitHub Pages without server-side rewrites. */
@@ -23,6 +24,7 @@ export function AppRoutes() {
         <Route path="/archive" element={<ArchivePage />} />
         <Route path="/archive/:date" element={<ArchiveDayPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/saved" element={<SavedPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route
           path="*"

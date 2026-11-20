@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { CATEGORY_BY_ID } from '../../shared/categories';
 import { EVIDENCE } from '../../shared/evidence';
@@ -26,14 +28,9 @@ export function EvidenceBadge({ evidence, patent, technical = false }: { evidenc
   const { detailed } = useView();
   const title = `${EVIDENCE[evidence].definition} ${EVIDENCE[evidence].caution}`;
   if (!detailed && !technical) {
-    // Simple view: plain words, always including the key caveat (e.g. "Preprint · not peer-reviewed").
+    // Simple view: plain words with the key caveat; tap for a one-line explanation.
     const plain = evidence === 'PATENT APPLICATION' && patent?.status === 'granted' ? 'Granted patent · not proof it works' : EVIDENCE[evidence].plain;
-    return (
-      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${EV_STYLE[evidence]}`} title={title}>
-        <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[evidence]}`} aria-hidden />
-        {plain}
-      </span>
-    );
+    return <ExplainBadge evidence={evidence} label={plain} />;
   }
   const sub = evidence === 'PATENT APPLICATION' && patent?.status === 'granted' ? ' · GRANTED' : '';
   return (
@@ -97,5 +94,69 @@ export function TrialNotice({ status }: { status?: string }) {
       <span aria-hidden>ⓘ</span>
       <span>Trial registration{status ? ` · ${status}` : ''}. Registration describes a study; it does not report results.</span>
     </p>
+  );
+}
+
+/**
+ * Plain evidence label that opens a short "What does this mean?" explanation on click/tap.
+ * The explanation is rendered in a portal with fixed positioning so neighbouring cards can never
+ * cover it, and it is clamped inside the viewport.
+ */
+function ExplainBadge({ evidence, label }: { evidence: EvidenceClass; label: string }) {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLSpanElement>(null);
+  const open = pos !== null;
+  const toggle = () => {
+    if (open || !btn.current) return setPos(null);
+    const r = btn.current.getBoundingClientRect();
+    const width = 272;
+    setPos({ top: r.bottom + 8, left: Math.max(12, Math.min(r.left, window.innerWidth - width - 12)) });
+  };
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== 'Escape') return;
+      if (e.type === 'mousedown' && (btn.current?.contains(e.target as Node) || pop.current?.contains(e.target as Node))) return;
+      setPos(null);
+    };
+    document.addEventListener('mousedown', close);
+    document.addEventListener('keydown', close);
+    window.addEventListener('scroll', close, { passive: true });
+    window.addEventListener('resize', close);
+    return () => {
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('keydown', close);
+      window.removeEventListener('scroll', close);
+      window.removeEventListener('resize', close);
+    };
+  }, [open]);
+  return (
+    <>
+      <button
+        ref={btn}
+        type="button"
+        aria-expanded={open}
+        title="What does this mean?"
+        onClick={toggle}
+        className={`inline-flex cursor-help items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium transition hover:brightness-125 ${EV_STYLE[evidence]}`}
+      >
+        <span className={`h-1.5 w-1.5 rounded-full ${EV_DOT[evidence]}`} aria-hidden />
+        {label}
+      </button>
+      {open &&
+        createPortal(
+          <span
+            ref={pop}
+            role="tooltip"
+            style={{ top: pos.top, left: pos.left, width: 272 }}
+            className="animate-menu fixed z-[60] block rounded-xl border border-ink-500 bg-ink-800 p-3 text-left text-[13px] font-normal leading-relaxed text-fg-muted shadow-2xl"
+          >
+            <span className="mb-1 block font-semibold text-fg">What does this mean?</span>
+            {EVIDENCE[evidence].explain}
+          </span>,
+          document.body,
+        )}
+    </>
   );
 }

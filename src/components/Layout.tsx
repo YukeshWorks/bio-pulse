@@ -1,8 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { DATA_MODE } from '../lib/data';
 import { ViewToggle } from '../lib/view';
 import { BackToTop } from '../lib/motion';
+import { Toaster } from './Actions';
 
 export function Logo({ className = '' }: { className?: string }) {
   return (
@@ -31,6 +32,7 @@ export const NAV = [
   { to: '/patents', label: 'Patents' },
   { to: '/categories', label: 'Fields' },
   { to: '/archive', label: 'Archive' },
+  { to: '/saved', label: 'Saved' },
   { to: '/about', label: 'About' },
 ];
 
@@ -118,6 +120,9 @@ function Footer() {
           <Link to="/about" className="link mt-3 inline-block text-sm">
             Methodology & sources →
           </Link>
+          <a href={`${import.meta.env.BASE_URL}data/feed.xml`} className="mt-3 flex items-center gap-2 text-sm text-ev-preprint hover:text-fg">
+            <RssIcon /> Subscribe to the daily briefing (RSS, free)
+          </a>
         </div>
       </div>
       <p className="border-t border-ink-600/40 py-4 text-center text-xs text-fg-subtle">Data and records belong to their respective publishers. BioPulse links to originals and does not republish full text.</p>
@@ -134,8 +139,35 @@ function DemoBanner() {
   );
 }
 
+export function RssIcon() {
+  return (
+    <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden>
+      <path d="M4 4a12 12 0 0112 12h-2.5A9.5 9.5 0 004 6.5V4zm0 5a7 7 0 017 7H8.5A4.5 4.5 0 004 11.5V9zm1.5 4.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" />
+    </svg>
+  );
+}
+
+/** Press "/" anywhere (outside a text field) to jump to search. */
+function useSlashToSearch() {
+  const nav = useNavigate();
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      e.preventDefault();
+      const input = document.querySelector<HTMLInputElement>('input[type="search"]');
+      if (input) input.focus();
+      else nav('/search');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [nav]);
+}
+
 export function Layout({ children }: { children: ReactNode }) {
   const loc = useLocation();
+  useSlashToSearch();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [loc.pathname]);
@@ -154,6 +186,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
       <Footer />
       <BackToTop />
+      <Toaster />
     </div>
   );
 }

@@ -51,7 +51,7 @@ async function mockLiveApis(page) {
 
 const listen = (srv) => new Promise((r) => srv.listen(0, '127.0.0.1', () => r(srv.address().port)));
 
-const ROUTES = ['/', '/search', '/search?q=base%20editing', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
+const ROUTES = ['/', '/search', '/search?q=base%20editing', '/saved', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
 const WIDTHS = [320, 390, 768, 1280];
 const failures = [];
 const fail = (m) => {

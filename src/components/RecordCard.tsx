@@ -3,6 +3,7 @@ import type { BioRecord } from '../../shared/schema';
 import { authorsLine, formatDate } from '../lib/format';
 import { useView } from '../lib/view';
 import { useReveal } from '../lib/motion';
+import { RecordActions } from './Actions';
 import { BasisLabel, CategoryChip, EvidenceBadge, PatentNotice, PreprintWarning, TrialNotice } from './Badges';
 
 const DATE_LABEL: Record<BioRecord['dateType'], string> = {
@@ -201,11 +202,12 @@ export function RecordCard({ r, day, index = 0 }: { r: BioRecord; day?: string; 
           <RecordDetails r={r} />
         </div>
       )}
-      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2">
         <SourceLink r={r} />
         <button type="button" onClick={() => setToggled(!open)} className="text-sm font-medium text-fg-subtle hover:text-fg" aria-expanded={open}>
           {open ? 'Less' : 'More details'}
         </button>
+        <RecordActions r={r} />
       </div>
     </article>
   );
