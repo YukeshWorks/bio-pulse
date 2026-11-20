@@ -107,7 +107,7 @@ jobs:
       - name: Verify build output
         run: npm run verify:dist
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
       - uses: actions/upload-pages-artifact@v3
         with:
