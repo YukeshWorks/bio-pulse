@@ -1,13 +1,66 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-19T09:00:06.124Z",
+  "updatedAt": "2026-11-20T08:47:55.831Z",
   "days": [
+    {
+      "date": "2026-11-20",
+      "total": 200,
+      "byEvidence": {
+        "PEER-REVIEWED": 107,
+        "CLINICAL TRIAL": 14,
+        "REGULATORY UPDATE": 3,
+        "PREPRINT": 76
+      },
+      "byCategory": {
+        "stem-cells-regenerative": 11,
+        "immunotechnology": 19,
+        "biomaterials-nanobiotech": 17,
+        "vaccines-diagnostics": 17,
+        "crispr-genetic-engineering": 20,
+        "microbiology": 31,
+        "environmental-biotech": 1,
+        "molecular-biology": 26,
+        "bioinformatics": 16,
+        "marine-biotech": 4,
+        "industrial-biotech": 3,
+        "bioprocess-engineering": 2,
+        "food-biotech": 8,
+        "pharma-biotech": 9,
+        "synthetic-biology": 1,
+        "agricultural-biotech": 1,
+        "biosensors": 2,
+        "protein-engineering": 4,
+        "ai-drug-discovery": 8
+      },
+      "briefing": "Today's top biotech story is “Allogeneic hematopoietic stem cell transplantation after CD19-directed CAR T-cell therapy in…”, a peer-reviewed study, one of 200 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-19",
       "total": 200,
       "byEvidence": {
         "PEER-REVIEWED": 195,
         "CLINICAL TRIAL": 5
+      },
+      "byCategory": {
+        "crispr-genetic-engineering": 19,
+        "molecular-biology": 16,
+        "stem-cells-regenerative": 11,
+        "microbiology": 31,
+        "immunotechnology": 19,
+        "synthetic-biology": 5,
+        "bioinformatics": 22,
+        "biosensors": 5,
+        "biomaterials-nanobiotech": 17,
+        "bioprocess-engineering": 7,
+        "industrial-biotech": 5,
+        "marine-biotech": 8,
+        "ai-drug-discovery": 9,
+        "vaccines-diagnostics": 8,
+        "environmental-biotech": 4,
+        "pharma-biotech": 9,
+        "food-biotech": 3,
+        "protein-engineering": 1,
+        "agricultural-biotech": 1
       },
       "briefing": "Microbiology led today's 200 verified biotech updates, headlined by a peer-reviewed study on “CRISPR/Cas for diatom gene editing: pitfalls…” and a peer-reviewed study on “Changes in the chromatin accessibility landscape…”."
     }

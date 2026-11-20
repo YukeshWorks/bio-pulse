@@ -1,76 +1,99 @@
 {
   "schemaVersion": 1,
-  "lastAttempt": "2026-11-19T09:00:06.124Z",
-  "lastAttemptDate": "2026-11-19",
+  "lastAttempt": "2026-11-20T08:47:55.831Z",
+  "lastAttemptDate": "2026-11-20",
   "outcome": "published",
-  "lastSuccessfulUpdate": "2026-11-19T09:00:06.124Z",
-  "lastSuccessfulDate": "2026-11-19",
-  "message": "Published 200 verified records; 1 source(s) failed: europepmc.",
+  "lastSuccessfulUpdate": "2026-11-20T08:47:55.831Z",
+  "lastSuccessfulDate": "2026-11-20",
+  "message": "Published 200 metadata-validated records (60 links live-checked).",
   "sources": [
     {
       "id": "pubmed",
       "name": "PubMed (NCBI E-utilities)",
       "status": "ok",
-      "fetched": 189,
-      "accepted": 115,
-      "rejected": 0,
-      "durationMs": 10901
+      "fetched": 187,
+      "accepted": 72,
+      "rejected": 99,
+      "durationMs": 8784,
+      "rejectReasons": {
+        "already-published": 54,
+        "not-biotech-relevant": 45
+      },
+      "capped": 16
     },
     {
       "id": "europepmc",
       "name": "Europe PMC",
-      "status": "failed",
-      "fetched": 0,
-      "accepted": 80,
-      "rejected": 0,
-      "durationMs": 4813,
-      "error": "HTTP 503 for https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28%22CRISPR%22+OR+%22genome+editing%22+OR+%22base+editing%22+OR+%22prime+editing%22+OR+%22gene+therapy%22+OR+%22gene+regulation%22+OR+%22RNA+biology%22+OR+%22epigenetic+regulation%22+OR+%22chromatin%22+OR+%22microbiome%22+OR"
+      "status": "ok",
+      "fetched": 150,
+      "accepted": 43,
+      "rejected": 54,
+      "durationMs": 37732,
+      "rejectReasons": {
+        "not-biotech-relevant": 54
+      },
+      "capped": 7
     },
     {
       "id": "biorxiv",
       "name": "bioRxiv",
       "status": "ok",
-      "fetched": 203,
-      "accepted": 0,
-      "rejected": 41,
-      "durationMs": 80840,
-      "note": "stopped after 10 pages (300/678 postings scanned)"
+      "fetched": 322,
+      "accepted": 61,
+      "rejected": 226,
+      "durationMs": 44715,
+      "note": "stopped after 20 pages (600/604 postings scanned)",
+      "rejectReasons": {
+        "not-biotech-relevant": 226
+      },
+      "capped": 35
     },
     {
       "id": "medrxiv",
       "name": "medRxiv",
       "status": "ok",
-      "fetched": 24,
-      "accepted": 0,
-      "rejected": 5,
-      "durationMs": 13274
+      "fetched": 36,
+      "accepted": 7,
+      "rejected": 25,
+      "durationMs": 4829,
+      "rejectReasons": {
+        "not-biotech-relevant": 25
+      },
+      "capped": 4
     },
     {
       "id": "clinicaltrials",
       "name": "ClinicalTrials.gov",
       "status": "ok",
-      "fetched": 17,
-      "accepted": 5,
-      "rejected": 0,
-      "durationMs": 347
+      "fetched": 19,
+      "accepted": 14,
+      "rejected": 5,
+      "durationMs": 283,
+      "rejectReasons": {
+        "already-published": 5
+      }
     },
     {
       "id": "fda",
       "name": "U.S. FDA (official RSS)",
       "status": "ok",
-      "fetched": 13,
-      "accepted": 0,
-      "rejected": 13,
-      "durationMs": 296
+      "fetched": 14,
+      "accepted": 2,
+      "rejected": 12,
+      "durationMs": 291,
+      "rejectReasons": {
+        "missing-title": 1,
+        "not-biotech-relevant": 11
+      }
     },
     {
       "id": "ema",
       "name": "European Medicines Agency (official RSS)",
       "status": "ok",
       "fetched": 1,
-      "accepted": 0,
+      "accepted": 1,
       "rejected": 0,
-      "durationMs": 967
+      "durationMs": 416
     },
     {
       "id": "epo",
@@ -94,6 +117,12 @@
     }
   ],
   "history": [
+    {
+      "at": "2026-11-20T08:47:55.831Z",
+      "outcome": "published",
+      "records": 200,
+      "failedSources": []
+    },
     {
       "at": "2026-11-19T09:00:06.124Z",
       "outcome": "published",
