@@ -1,7 +1,38 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-20T08:47:55.831Z",
+  "updatedAt": "2026-11-21T08:29:36.121Z",
   "days": [
+    {
+      "date": "2026-11-21",
+      "total": 200,
+      "byEvidence": {
+        "PEER-REVIEWED": 103,
+        "PREPRINT": 92,
+        "REGULATORY UPDATE": 1,
+        "CLINICAL TRIAL": 4
+      },
+      "byCategory": {
+        "biosensors": 5,
+        "crispr-genetic-engineering": 20,
+        "immunotechnology": 20,
+        "pharma-biotech": 7,
+        "molecular-biology": 30,
+        "microbiology": 32,
+        "biomaterials-nanobiotech": 11,
+        "synthetic-biology": 8,
+        "stem-cells-regenerative": 16,
+        "environmental-biotech": 4,
+        "bioprocess-engineering": 2,
+        "food-biotech": 4,
+        "bioinformatics": 12,
+        "ai-drug-discovery": 8,
+        "industrial-biotech": 7,
+        "vaccines-diagnostics": 12,
+        "marine-biotech": 1,
+        "agricultural-biotech": 1
+      },
+      "briefing": "Today's top biotech story is “Cooperative DSN-Cas12a cascade and Cu/Zr-MOF nanozyme for label-free electrochemical detection of…”, a peer-reviewed study, one of 200 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-20",
       "total": 200,
