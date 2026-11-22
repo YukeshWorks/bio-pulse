@@ -1,7 +1,36 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-21T08:29:36.121Z",
+  "updatedAt": "2026-11-22T08:23:03.795Z",
   "days": [
+    {
+      "date": "2026-11-22",
+      "total": 113,
+      "byEvidence": {
+        "PEER-REVIEWED": 100,
+        "PREPRINT": 13
+      },
+      "byCategory": {
+        "agricultural-biotech": 1,
+        "bioprocess-engineering": 2,
+        "microbiology": 20,
+        "marine-biotech": 1,
+        "crispr-genetic-engineering": 13,
+        "bioinformatics": 7,
+        "immunotechnology": 15,
+        "vaccines-diagnostics": 4,
+        "stem-cells-regenerative": 8,
+        "biomaterials-nanobiotech": 11,
+        "food-biotech": 4,
+        "pharma-biotech": 3,
+        "synthetic-biology": 2,
+        "biosensors": 5,
+        "protein-engineering": 1,
+        "molecular-biology": 12,
+        "ai-drug-discovery": 2,
+        "industrial-biotech": 2
+      },
+      "briefing": "Today's top biotech story is “Optimization and bioreactor scale-up of phosphorus Solubilization by a newly isolated…”, a peer-reviewed study, one of 113 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-21",
       "total": 200,
