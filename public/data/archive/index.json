@@ -1,7 +1,34 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-22T08:23:03.795Z",
+  "updatedAt": "2026-11-23T09:22:57.288Z",
   "days": [
+    {
+      "date": "2026-11-23",
+      "total": 79,
+      "byEvidence": {
+        "PEER-REVIEWED": 60,
+        "PREPRINT": 19
+      },
+      "byCategory": {
+        "protein-engineering": 1,
+        "immunotechnology": 9,
+        "industrial-biotech": 3,
+        "pharma-biotech": 5,
+        "biomaterials-nanobiotech": 8,
+        "molecular-biology": 12,
+        "microbiology": 13,
+        "bioinformatics": 9,
+        "biosensors": 3,
+        "stem-cells-regenerative": 6,
+        "crispr-genetic-engineering": 4,
+        "synthetic-biology": 1,
+        "marine-biotech": 1,
+        "ai-drug-discovery": 2,
+        "food-biotech": 1,
+        "vaccines-diagnostics": 1
+      },
+      "briefing": "Today's top biotech story is “A High-Efficiency In Vivo Continuous Evolution Platform for Antiviral Peptides Engineering”, a peer-reviewed study, one of 79 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-22",
       "total": 113,
