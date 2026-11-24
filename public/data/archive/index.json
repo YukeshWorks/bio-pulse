@@ -1,7 +1,37 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-23T09:22:57.288Z",
+  "updatedAt": "2026-11-24T11:17:00.958Z",
   "days": [
+    {
+      "date": "2026-11-24",
+      "total": 176,
+      "byEvidence": {
+        "PEER-REVIEWED": 110,
+        "CLINICAL TRIAL": 9,
+        "REGULATORY UPDATE": 2,
+        "PREPRINT": 55
+      },
+      "byCategory": {
+        "crispr-genetic-engineering": 15,
+        "molecular-biology": 16,
+        "immunotechnology": 17,
+        "industrial-biotech": 5,
+        "stem-cells-regenerative": 14,
+        "marine-biotech": 5,
+        "biomaterials-nanobiotech": 17,
+        "environmental-biotech": 2,
+        "biosensors": 5,
+        "microbiology": 24,
+        "bioinformatics": 19,
+        "vaccines-diagnostics": 7,
+        "food-biotech": 5,
+        "synthetic-biology": 2,
+        "pharma-biotech": 16,
+        "bioprocess-engineering": 2,
+        "ai-drug-discovery": 5
+      },
+      "briefing": "Today's top biotech story is “Photo Controlled CRISPR/Cas12a Microdroplets for Amplification-free Nucleic Acid Detection”, a peer-reviewed study, one of 176 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-23",
       "total": 79,

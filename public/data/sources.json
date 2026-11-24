@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-23T09:22:57.288Z",
+  "updatedAt": "2026-11-24T11:17:00.958Z",
   "sources": [
     {
       "id": "pubmed",
@@ -21,13 +21,13 @@
         "id": "pubmed",
         "name": "PubMed (NCBI E-utilities)",
         "status": "ok",
-        "fetched": 144,
-        "accepted": 62,
-        "rejected": 82,
-        "durationMs": 12126,
+        "fetched": 175,
+        "accepted": 87,
+        "rejected": 88,
+        "durationMs": 12738,
         "rejectReasons": {
-          "already-published": 27,
-          "not-biotech-relevant": 55
+          "already-published": 35,
+          "not-biotech-relevant": 53
         }
       }
     },
@@ -50,13 +50,13 @@
         "id": "europepmc",
         "name": "Europe PMC",
         "status": "ok",
-        "fetched": 18,
-        "accepted": 2,
-        "rejected": 5,
-        "durationMs": 117827,
+        "fetched": 150,
+        "accepted": 48,
+        "rejected": 58,
+        "durationMs": 48505,
         "rejectReasons": {
-          "already-published": 1,
-          "not-biotech-relevant": 4
+          "already-published": 5,
+          "not-biotech-relevant": 53
         }
       }
     },
@@ -78,13 +78,13 @@
         "id": "biorxiv",
         "name": "bioRxiv",
         "status": "ok",
-        "fetched": 56,
-        "accepted": 15,
-        "rejected": 41,
-        "durationMs": 33236,
+        "fetched": 170,
+        "accepted": 27,
+        "rejected": 143,
+        "durationMs": 81554,
         "rejectReasons": {
-          "already-published": 5,
-          "not-biotech-relevant": 36
+          "already-published": 15,
+          "not-biotech-relevant": 128
         }
       }
     },
@@ -105,11 +105,14 @@
       "lastStatus": {
         "id": "medrxiv",
         "name": "medRxiv",
-        "status": "empty",
-        "fetched": 0,
-        "accepted": 0,
-        "rejected": 0,
-        "durationMs": 861
+        "status": "ok",
+        "fetched": 26,
+        "accepted": 3,
+        "rejected": 23,
+        "durationMs": 48098,
+        "rejectReasons": {
+          "not-biotech-relevant": 23
+        }
       }
     },
     {
@@ -129,11 +132,11 @@
       "lastStatus": {
         "id": "clinicaltrials",
         "name": "ClinicalTrials.gov",
-        "status": "empty",
-        "fetched": 0,
-        "accepted": 0,
+        "status": "ok",
+        "fetched": 9,
+        "accepted": 9,
         "rejected": 0,
-        "durationMs": 211
+        "durationMs": 190
       }
     },
     {
@@ -154,13 +157,13 @@
         "id": "fda",
         "name": "U.S. FDA (official RSS)",
         "status": "ok",
-        "fetched": 10,
-        "accepted": 0,
-        "rejected": 10,
+        "fetched": 13,
+        "accepted": 2,
+        "rejected": 11,
         "durationMs": 284,
         "rejectReasons": {
-          "already-published": 2,
-          "not-biotech-relevant": 8
+          "already-published": 1,
+          "not-biotech-relevant": 10
         }
       }
     },
@@ -185,7 +188,7 @@
         "fetched": 0,
         "accepted": 0,
         "rejected": 0,
-        "durationMs": 520
+        "durationMs": 577
       }
     },
     {
