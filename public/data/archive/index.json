@@ -1,7 +1,36 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-24T11:17:00.958Z",
+  "updatedAt": "2026-11-25T10:02:24.570Z",
   "days": [
+    {
+      "date": "2026-11-25",
+      "total": 147,
+      "byEvidence": {
+        "PEER-REVIEWED": 83,
+        "REGULATORY UPDATE": 2,
+        "PREPRINT": 57,
+        "CLINICAL TRIAL": 5
+      },
+      "byCategory": {
+        "microbiology": 23,
+        "biomaterials-nanobiotech": 20,
+        "immunotechnology": 12,
+        "crispr-genetic-engineering": 12,
+        "stem-cells-regenerative": 14,
+        "industrial-biotech": 2,
+        "pharma-biotech": 8,
+        "environmental-biotech": 3,
+        "biosensors": 6,
+        "molecular-biology": 16,
+        "bioinformatics": 11,
+        "food-biotech": 4,
+        "vaccines-diagnostics": 10,
+        "protein-engineering": 1,
+        "bioprocess-engineering": 3,
+        "ai-drug-discovery": 2
+      },
+      "briefing": "Today's top biotech story is “Antibiotic Aerosol Resets Microbial Dysregulation in Metastatic Lungs, Potentiating Anti-PD-1-Driven T…”, a peer-reviewed study, one of 147 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-24",
       "total": 176,
