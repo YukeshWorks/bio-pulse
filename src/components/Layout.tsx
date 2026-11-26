@@ -24,14 +24,13 @@ export function Logo({ className = '' }: { className?: string }) {
 }
 
 export const NAV = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/search', label: 'Search' },
+  { to: '/', label: 'Explore', end: true },
+  { to: '/news', label: 'News' },
   { to: '/latest', label: 'Latest' },
   { to: '/papers', label: 'Papers' },
   { to: '/trials', label: 'Trials' },
   { to: '/patents', label: 'Patents' },
-  { to: '/categories', label: 'Fields' },
-  { to: '/archive', label: 'Archive' },
+  { to: '/search', label: 'Search' },
   { to: '/saved', label: 'Saved' },
   { to: '/about', label: 'About' },
 ];
@@ -120,6 +119,11 @@ function Footer() {
           <Link to="/about" className="link mt-3 inline-block text-sm">
             Methodology & sources →
           </Link>
+          <p className="mt-3 flex flex-wrap gap-x-3 text-sm text-fg-muted">
+            <Link to="/categories" className="hover:text-fg">Fields</Link>
+            <Link to="/archive" className="hover:text-fg">Daily archive</Link>
+            <Link to="/news" className="hover:text-fg">Daily news</Link>
+          </p>
           <a href={`${import.meta.env.BASE_URL}data/feed.xml`} className="mt-3 flex items-center gap-2 text-sm text-ev-preprint hover:text-fg">
             <RssIcon /> Subscribe to the daily briefing (RSS, free)
           </a>

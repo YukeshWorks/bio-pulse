@@ -5,6 +5,7 @@ import { EmptyState } from './components/States';
 import { AboutPage } from './pages/AboutPage';
 import { ArchiveDayPage, ArchivePage } from './pages/ArchivePage';
 import { HomePage } from './pages/HomePage';
+import { ExplorePage } from './pages/ExplorePage';
 import { SearchPage } from './pages/SearchPage';
 import { SavedPage } from './pages/SavedPage';
 import { CategoriesPage, CategoryPage, LatestPage, PapersPage, PatentsPage, TrialsPage } from './pages/ListPages';
@@ -14,7 +15,8 @@ export function AppRoutes() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ExplorePage />} />
+        <Route path="/news" element={<HomePage />} />
         <Route path="/latest" element={<LatestPage />} />
         <Route path="/papers" element={<PapersPage />} />
         <Route path="/patents" element={<PatentsPage />} />
@@ -31,7 +33,7 @@ export function AppRoutes() {
           element={
             <EmptyState title="Page not found">
               <Link to="/" className="link">
-                Back to today&apos;s briefing
+                Back to the compound explorer
               </Link>
             </EmptyState>
           }

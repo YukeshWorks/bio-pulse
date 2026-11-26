@@ -133,7 +133,7 @@ export function SavedPage() {
             <p className="text-fg">Nothing saved yet</p>
             <p className="mx-auto mt-2 max-w-md text-sm text-fg-muted">
               Tap the ☆ <span className="text-fg">Save</span> button on any story to keep it here. Start with{' '}
-              <Link to="/" className="link">
+              <Link to="/news" className="link">
                 today’s top stories
               </Link>{' '}
               or{' '}
