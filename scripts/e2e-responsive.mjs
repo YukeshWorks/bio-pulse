@@ -45,10 +45,12 @@ const LIVE = {
 const CAF = 'RYYVLZVUVIJVGH-UHFFFAOYSA-N';
 const TINY_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
 async function mockCompoundApis(page) {
-  await page.route(/pubchem\.ncbi\.nlm\.nih\.gov|wikidata\.org|commons\.wikimedia\.org/, (route) => {
+  await page.route(/pubchem\.ncbi\.nlm\.nih\.gov|wikidata\.org|commons\.wikimedia\.org|inaturalist/, (route) => {
     const u = decodeURIComponent(route.request().url());
     const json = (b) => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(b) });
     if (/\/PNG|Special:FilePath/.test(u)) return route.fulfill({ status: 200, contentType: 'image/png', body: TINY_PNG });
+    if (u.includes('api.inaturalist.org')) return json({ results: [{ id: 1, name: 'Paullinia cupana', iconic_taxon_name: 'Plantae', preferred_common_name: 'guarana', default_photo: { medium_url: 'https://inaturalist-open-data.s3.amazonaws.com/photos/1/medium.jpeg', attribution: '(c) test' } }] });
+    if (/inaturalist-open-data/.test(u)) return route.fulfill({ status: 200, contentType: 'image/png', body: TINY_PNG });
     if (u.includes('/autocomplete/')) return json({ dictionary_terms: { compound: ['caffeine'] } });
     if (u.includes('/property/')) return json({ PropertyTable: { Properties: [{ CID: 2519, Title: 'Caffeine', MolecularFormula: 'C8H10N4O2', MolecularWeight: '194.19', InChIKey: CAF }] } });
     if (u.includes('/description/')) return json({ InformationList: { Information: [{ Description: 'TEST description of caffeine for layout checks.', DescriptionSourceName: 'Test' }] } });
@@ -81,7 +83,7 @@ async function mockLiveApis(page) {
 
 const listen = (srv) => new Promise((r) => srv.listen(0, '127.0.0.1', () => r(srv.address().port)));
 
-const ROUTES = ['/', '/?q=caffeine', '/news', '/search', '/search?q=base%20editing', '/saved', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
+const ROUTES = ['/', '/?q=caffeine', '/news', '/search?q=DL-methamphetamine%20extraction%20production', '/search', '/search?q=base%20editing', '/saved', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
 const WIDTHS = [320, 390, 768, 1280];
 const failures = [];
 const fail = (m) => {
@@ -116,7 +118,7 @@ try {
     if (cards.length !== 3) fail(`news @${width}px: expected 3 discoveries, found ${cards.length}`);
     await page.goto(`http://127.0.0.1:${port}/#/?q=caffeine`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(400);
-    const organisms = await page.$$eval('section li a[href*="wikidata.org"]', (as) => as.length);
+    const organisms = await page.$$eval('section li a[href*="wikidata.org"], section li a[href*="inaturalist.org"]', (as) => as.length);
     if (organisms < 2) fail(`explore @${width}px: expected organism cards, found ${organisms}`);
     await page.goto(`http://127.0.0.1:${port}/#/search?q=base%20editing`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(300);

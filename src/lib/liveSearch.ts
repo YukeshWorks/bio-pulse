@@ -257,7 +257,7 @@ export interface SourceState {
 export async function searchEverywhere(
   q: string,
   sources: LiveSourceId[],
-  opts: { fetcher?: Fetcher; signal?: AbortSignal; onSource?: (id: LiveSourceId, s: SourceState) => void; timeoutMs?: number } = {},
+  opts: { fetcher?: Fetcher; signal?: AbortSignal; onSource?: (id: LiveSourceId, s: SourceState) => void; onPartial?: (results: LiveResult[]) => void; timeoutMs?: number } = {},
 ): Promise<{ results: LiveResult[]; states: Record<string, SourceState> }> {
   const fetcher: Fetcher = opts.fetcher ?? ((u, i) => fetch(u, i));
   const states: Record<string, SourceState> = {};
@@ -265,15 +265,19 @@ export async function searchEverywhere(
     states[id] = st;
     opts.onSource?.(id, st);
   };
+  // Results are reported as each source answers, so fast sources show immediately.
+  const done: LiveResult[][] = sources.map(() => []);
   const lists = await Promise.all(
-    sources.map(async (id) => {
+    sources.map(async (id, idx) => {
       report(id, { status: 'loading', count: 0 });
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 15000);
+      const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 25000);
       opts.signal?.addEventListener('abort', () => ctrl.abort());
       try {
         const r = await SEARCHERS[id](q, fetcher, ctrl.signal);
         report(id, { status: 'ok', count: r.length });
+        done[idx] = r;
+        if (!opts.signal?.aborted) opts.onPartial?.(mergeResults(done));
         return r;
       } catch (e) {
         const msg = ctrl.signal.aborted ? 'timed out or cancelled' : e instanceof Error ? e.message : 'failed';

@@ -50,6 +50,7 @@ function fakeApis(opts: { morphine?: boolean; legalFail?: boolean; sparqlFail?: 
     if (u.includes('/synonyms/')) return json({ InformationList: { Information: [{ Synonym: [title] }] } });
     if (u.includes('pug_view/categories')) return json(vendors);
     if (u.includes('/autocomplete/')) return json({ dictionary_terms: { compound: ['caffeine'] } });
+    if (u.includes('api.inaturalist.org')) return json({ results: [] });
     if (u.includes('list=search')) return json({ query: { search: [{ title: 'Q100' }] } });
     if (u.includes('action=wbgetclaims')) {
       const p = /property=(P\d+)/.exec(u)![1];
@@ -220,5 +221,34 @@ describe('Explore page', () => {
     page('caffine');
     await screen.findByText(/No compound called “caffine” was found/);
     await screen.findByRole('button', { name: 'caffeine' });
+  });
+});
+
+describe('safety: name variants and procedure searches (regression for DL-methamphetamine)', () => {
+  it('matches stereo, salt and hydrate variants but not look-alikes', async () => {
+    const { matchRestrictedName } = await import('../src/lib/compound');
+    for (const [n, want] of [['DL-methamphetamine', 'methamphetamine'], ['(+)-cocaine hydrochloride', 'cocaine'], ['Morphine sulfate', 'morphine'], ['Ephedrine HCl', 'ephedrine'], ['d-amphetamine sulfate', 'amphetamine'], ['Codeine phosphate hemihydrate', 'codeine'], ['LSD', 'lsd']] as const) expect(matchRestrictedName(n), n).toBe(want);
+    for (const n of ['Caffeine', 'Procaine', 'Domperidone', 'Nicotinamide', 'Curcumin']) expect(matchRestrictedName(n), n).toBeUndefined();
+  });
+  it('flags DL-methamphetamine as restricted even without legal records', () => {
+    const r = assessRestriction({ names: ['DL-methamphetamine'], legal: [], regulatorySources: [] });
+    expect(r.restricted).toBe(true);
+    expect(canShowSuppliers(r)).toBe(false);
+  });
+  it('refuses production searches for restricted compounds only', async () => {
+    const { isRestrictedProcedureQuery } = await import('../src/lib/compound');
+    for (const q of ['DL-methamphetamine extraction production', 'how to make cocaine', 'opium poppy cultivation', 'synthesis of fentanyl']) expect(isRestrictedProcedureQuery(q), q).toBe(true);
+    for (const q of ['caffeine extraction', 'morphine biosynthesis in poppy', 'methamphetamine neurotoxicity', 'CRISPR base editing']) expect(isRestrictedProcedureQuery(q), q).toBe(false);
+  });
+});
+
+describe('organism photos from iNaturalist', () => {
+  it('accepts only an exact name match with an https iNaturalist image', async () => {
+    const { mapInat, sentenceCase } = await import('../src/lib/compound');
+    const res = { results: [{ id: 898697, name: 'Senegalia berlandieri', iconic_taxon_name: 'Plantae', preferred_common_name: 'Guajillo', default_photo: { medium_url: 'https://inaturalist-open-data.s3.amazonaws.com/photos/1/medium.jpeg', attribution: '(c) someone, CC BY-NC' } }] };
+    expect(mapInat(res, 'Senegalia berlandieri')).toMatchObject({ commonName: 'Guajillo', kingdom: 'Plants', url: 'https://www.inaturalist.org/taxa/898697', imageUrl: 'https://inaturalist-open-data.s3.amazonaws.com/photos/1/medium.jpeg' });
+    expect(mapInat(res, 'Senegalia greggii')).toEqual({});
+    expect(mapInat({ results: [{ ...res.results[0], default_photo: { medium_url: 'http://evil.example/x.jpg' } }] }, 'Senegalia berlandieri').imageUrl).toBeUndefined();
+    expect(sentenceCase('tea plant')).toBe('Tea plant');
   });
 });

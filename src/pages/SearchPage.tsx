@@ -4,6 +4,7 @@ import { PageHeader } from '../components/Layout';
 import { EmptyState } from '../components/States';
 import { KIND_LABEL, LIVE_SOURCES, searchEverywhere, type LiveKind, type LiveResult, type LiveSourceId, type SourceState } from '../lib/liveSearch';
 import { useReveal } from '../lib/motion';
+import { isRestrictedProcedureQuery } from '../lib/compound';
 
 const KIND_STYLE: Record<LiveKind, string> = {
   'peer-reviewed': 'text-ev-peer border-ev-peer/40 bg-ev-peer/10',
@@ -14,13 +15,34 @@ const KIND_STYLE: Record<LiveKind, string> = {
   other: 'text-fg-muted border-ink-500 bg-ink-800',
 };
 
+/** Small illustration per result type, so every result has an image. */
+function KindArt({ kind }: { kind: LiveKind }) {
+  const paths: Record<LiveKind, React.ReactNode> = {
+    'peer-reviewed': <path d="M7 3h7l4 4v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zm2 7h6M9 13h6M9 16h4m5.5 1.5l1.5 1.5 3-3" />,
+    'journal-article': <path d="M7 3h7l4 4v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zm2 7h6M9 13h6M9 16h4" />,
+    preprint: <path d="M7 3h7l4 4v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zm2 8h6M9 14h3M14 3v4h4" strokeDasharray="2 1.5" />,
+    trial: <path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3M8 15h8" />,
+    patent: <path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8l5.5-.8L12 3z" />,
+    other: <path d="M5 5h14v14H5zM9 9h6v6H9z" />,
+  };
+  return (
+    <span className={`hidden h-16 w-16 shrink-0 items-center justify-center rounded-xl border sm:flex ${KIND_STYLE[kind]}`} aria-hidden>
+      <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {paths[kind]}
+      </svg>
+    </span>
+  );
+}
+
 const SOURCE_NAME = Object.fromEntries(LIVE_SOURCES.map((s) => [s.id, s.name])) as Record<LiveSourceId, string>;
 const EXAMPLES = ['CRISPR base editing', 'CAR-T solid tumors', 'mRNA vaccine', 'plastic degrading enzyme', 'organoid'];
 
 function ResultCard({ r, index }: { r: LiveResult; index: number }) {
   const reveal = useReveal<HTMLLIElement>((index % 6) * 40);
   return (
-    <li ref={reveal.ref} style={reveal.style} className={`card card-hover flex flex-col gap-1.5 p-4 ${reveal.className}`}>
+    <li ref={reveal.ref} style={reveal.style} className={`card card-hover flex gap-4 p-4 ${reveal.className}`}>
+      <KindArt kind={r.kind} />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${KIND_STYLE[r.kind]}`}>{KIND_LABEL[r.kind]}</span>
         <span className="text-xs text-fg-subtle">from {SOURCE_NAME[r.source]}</span>
@@ -42,6 +64,7 @@ function ResultCard({ r, index }: { r: LiveResult; index: number }) {
           </a>
         ))}
       </p>
+      </div>
     </li>
   );
 }
@@ -74,8 +97,10 @@ export function SearchPage() {
     ctrl.current = c;
     setResults(null);
     setStates({});
+    if (isRestrictedProcedureQuery(q)) return;
     searchEverywhere(q.trim(), enabled, {
       signal: c.signal,
+      onPartial: (r) => !c.signal.aborted && setResults(r),
       onSource: (id, s) => !c.signal.aborted && setStates((prev) => ({ ...prev, [id]: s })),
     }).then((r) => !c.signal.aborted && setResults(r.results));
     return () => c.abort();
@@ -93,7 +118,9 @@ export function SearchPage() {
     return c;
   }, [results]);
 
-  const loading = q.trim().length >= 2 && results === null;
+  const blocked = isRestrictedProcedureQuery(q);
+  const loading = !blocked && q.trim().length >= 2 && results === null;
+  const stillLoading = Object.values(states).some((st) => st.status === 'loading');
   const submit = (value: string) => {
     const v = value.trim();
     setKind('all');
@@ -192,6 +219,15 @@ export function SearchPage() {
           </div>
         )}
 
+        {blocked && (
+          <div className="rounded-xl border border-ev-reg/50 bg-ev-reg/10 px-4 py-3 text-sm" role="alert">
+            <p className="font-semibold text-ev-reg">This search was not run</p>
+            <p className="mt-1 text-fg-muted">
+              BioPulse does not search for ways to extract, make, grow or obtain controlled drugs or dangerous substances. You can still search the compound’s biology, medicine or effects — for example “{q.replace(/\b(extract\w*|synthes\w*|produc\w*|manufactur\w*|make|making|cook\w*|isolat\w*|purif\w*|precursor\w*|recipe|how to|grow\w*|cultivat\w*|refin\w*)\b/gi, '').replace(/\s+/g, ' ').trim()} health effects”.
+            </p>
+          </div>
+        )}
+
         {loading && (
           <div className="space-y-3" role="status">
             <span className="sr-only">Searching…</span>
@@ -201,11 +237,12 @@ export function SearchPage() {
           </div>
         )}
 
-        {results && (
+        {results && !blocked && (
           <>
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <span className="text-sm text-fg-muted">
                 {shown.length} result{shown.length === 1 ? '' : 's'} for <strong className="text-fg">“{q}”</strong>
+                {stillLoading && <span className="ml-2 text-fg-subtle">· more sources still loading…</span>}
               </span>
               <span className="mx-1 text-fg-subtle">·</span>
               <button type="button" className={`chip ${kind === 'all' ? 'border-accent/60 text-fg' : ''}`} onClick={() => setKind('all')} aria-pressed={kind === 'all'}>
