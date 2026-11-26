@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   assessRestriction,
   autocomplete,
+  cached,
   BROWSE_CATEGORIES,
   canShowSuppliers,
   getCategories,
@@ -346,16 +347,32 @@ function Suppliers({ suppliers, show, restricted, unverified, name }: { supplier
   );
 }
 
+function DidYouMean({ q }: { q: string }) {
+  const [, setParams] = useSearchParams();
+  const sugs = useLoad(() => autocomplete(q.slice(0, Math.max(3, q.length - 2))), [q]);
+  if (sugs.state !== 'ok' || !sugs.data.length) return null;
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      <span className="text-sm text-fg-subtle">Did you mean:</span>
+      {sugs.data.slice(0, 6).map((s) => (
+        <button key={s} type="button" onClick={() => setParams({ q: s })} className="rounded-full border border-ink-600 px-3 py-1 text-sm text-fg-muted hover:border-accent/60 hover:text-fg">
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Result({ q }: { q: string }) {
-  const id = useLoad(() => lookupCompound(q), [q]);
+  const id = useLoad(() => cached(`id:${q}`, () => lookupCompound(q)), [q]);
   const ident: CompoundIdentity | null = id.state === 'ok' ? id.data : null;
   const cid = ident?.cid;
   const key = ident?.inchikey;
-  const desc = useLoad<Description[]>(cid ? () => getDescriptions(cid) : null, [cid]);
-  const syn = useLoad<string[]>(cid ? () => getSynonyms(cid) : null, [cid]);
-  const cats = useLoad(cid ? () => getCategories(cid) : null, [cid]);
-  const facts = useLoad(key ? () => getFacts(key) : null, [key]);
-  const orgs = useLoad<Organism[]>(key ? () => getOrganisms(key) : null, [key]);
+  const desc = useLoad<Description[]>(cid ? () => cached(`desc:${cid}`, () => getDescriptions(cid)) : null, [cid]);
+  const syn = useLoad<string[]>(cid ? () => cached(`syn:${cid}`, () => getSynonyms(cid)) : null, [cid]);
+  const cats = useLoad(cid ? () => cached(`cats:${cid}`, () => getCategories(cid)) : null, [cid]);
+  const facts = useLoad(key ? () => cached(`facts:${key}`, () => getFacts(key)) : null, [key]);
+  const orgs = useLoad<Organism[]>(key ? () => cached(`orgs:${key}`, () => getOrganisms(key)) : null, [key]);
 
   const legal = facts.state === 'ok' ? facts.data.legal : facts.state === 'error' || (ident && !key) ? null : undefined;
   const restriction = useMemo(() => {
@@ -380,6 +397,7 @@ function Result({ q }: { q: string }) {
       <div className="card p-6">
         <p className="text-lg text-fg">No compound called “{q}” was found.</p>
         <p className="mt-1 text-sm text-fg-muted">Check the spelling, or try the common name (e.g. “vitamin C”) or the chemical name (e.g. “ascorbic acid”).</p>
+        <DidYouMean q={q} />
       </div>
     );
 
