@@ -4,19 +4,23 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  __clearItemCache,
   assertInchiKey,
   assessRestriction,
   canShowSuppliers,
-  factsQuery,
+  getFacts,
+  getOrganisms,
   indiaStatus,
   isRestrictiveStatus,
   mapCategories,
+  mapClaims,
   mapDescriptions,
-  mapFacts,
   mapIdentity,
-  mapKingdoms,
+  mapItemSearch,
+  mapLabels,
   mapOrganisms,
-  organismsQuery,
+  searchItemUrl,
+  taxaQuery,
   thumb,
 } from '../src/lib/compound';
 import { ExplorePage } from '../src/pages/ExplorePage';
@@ -24,22 +28,43 @@ import { ExplorePage } from '../src/pages/ExplorePage';
 const CAFFEINE_KEY = 'RYYVLZVUVIJVGH-UHFFFAOYSA-N';
 const MORPHINE_KEY = 'BQJCRHHNABKAKU-KBQPJGBKSA-N';
 const props = (cid: number, title: string, key: string) => ({ PropertyTable: { Properties: [{ CID: cid, Title: title, MolecularFormula: 'C8H10N4O2', MolecularWeight: '194.19', IUPACName: 'x', InChIKey: key, CanonicalSMILES: 'C' }] } });
-const sparqlOrgs = { results: { bindings: [
-  { taxon: { value: 'http://www.wikidata.org/entity/Q1' }, name: { value: 'Coffea arabica' }, common: { value: 'Arabica coffee' }, image: { value: 'http://commons.wikimedia.org/wiki/Special:FilePath/Coffee.jpg' } },
-  { taxon: { value: 'http://www.wikidata.org/entity/Q2' }, name: { value: 'Camellia sinensis' }, common: { value: 'tea plant' } },
-  { taxon: { value: 'http://www.wikidata.org/entity/Q3' }, name: { value: 'Apis mellifera' } },
+const ent = (q: string) => ({ value: `http://www.wikidata.org/entity/${q}` });
+const taxaSparql = { results: { bindings: [
+  { taxon: ent('Q1'), name: { value: 'Coffea arabica' }, common: { value: 'Arabica coffee' }, image: { value: 'http://commons.wikimedia.org/wiki/Special:FilePath/Coffee.jpg' }, k: ent('Q756') },
+  { taxon: ent('Q2'), name: { value: 'Camellia sinensis' }, common: { value: 'tea plant' }, k: ent('Q756') },
+  { taxon: ent('Q3'), name: { value: 'Apis mellifera' }, k: ent('Q729') },
 ] } };
-const sparqlKingdoms = { results: { bindings: [
-  { taxon: { value: 'http://www.wikidata.org/entity/Q1' }, k: { value: 'http://www.wikidata.org/entity/Q756' } },
-  { taxon: { value: 'http://www.wikidata.org/entity/Q2' }, k: { value: 'http://www.wikidata.org/entity/Q756' } },
-  { taxon: { value: 'http://www.wikidata.org/entity/Q3' }, k: { value: 'http://www.wikidata.org/entity/Q729' } },
-] } };
-const facts = (legal: { s: string; j?: string }[]) => ({ results: { bindings: [
-  { kind: { value: 'class' }, label: { value: 'alkaloid' } },
-  { kind: { value: 'use' }, label: { value: 'stimulant' } },
-  ...legal.map((l) => ({ kind: { value: 'legal' }, label: { value: l.s }, ...(l.j ? { jur: { value: l.j } } : {}) })),
-] } });
+const claim = (id: string, jur?: string) => ({ mainsnak: { datavalue: { value: { id } } }, rank: 'normal', ...(jur ? { qualifiers: { P1001: [{ datavalue: { value: { id: jur } } }] } } : {}) });
+const LABELS: Record<string, string> = { Q1: 'Coffea arabica', Q2: 'Camellia sinensis', Q3: 'Apis mellifera', Q10: 'purine alkaloid', Q11: 'stimulant', Q20: 'Schedule II', Q21: 'United States' };
 const vendors = { SourceCategories: { Categories: [{ Category: 'Chemical Vendors', Sources: [{ SourceName: 'Sigma-Aldrich', SourceRecordURL: 'https://www.sigmaaldrich.com/x' }, { SourceName: 'TCI', SourceRecordURL: 'javascript:alert(1)' }, { SourceName: 'Sigma-Aldrich' }] }] } };
+
+/** Routes a fake fetch for PubChem, the Wikidata Action API and the query service. */
+function fakeApis(opts: { morphine?: boolean; legalFail?: boolean; sparqlFail?: boolean; hang?: string } = {}) {
+  return async (url: string, init?: RequestInit) => {
+    const u = decodeURIComponent(String(url));
+    const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { 'content-type': 'application/json' } });
+    if (opts.hang && u.includes(opts.hang)) return new Promise<Response>((_, rej) => init?.signal?.addEventListener('abort', () => rej(new Error('aborted'))));
+    const title = opts.morphine ? 'Morphine' : 'Caffeine';
+    if (u.includes('/property/')) return json(props(opts.morphine ? 5288826 : 2519, title, opts.morphine ? MORPHINE_KEY : CAFFEINE_KEY));
+    if (u.includes('/description/')) return json({ InformationList: { Information: [{ Description: `${title} is a natural compound described for testing purposes.`, DescriptionSourceName: 'Test Source' }] } });
+    if (u.includes('/synonyms/')) return json({ InformationList: { Information: [{ Synonym: [title] }] } });
+    if (u.includes('pug_view/categories')) return json(vendors);
+    if (u.includes('/autocomplete/')) return json({ dictionary_terms: { compound: ['caffeine'] } });
+    if (u.includes('list=search')) return json({ query: { search: [{ title: 'Q100' }] } });
+    if (u.includes('action=wbgetclaims')) {
+      const p = /property=(P\d+)/.exec(u)![1];
+      if (p === 'P3493' && opts.legalFail) return json({}, 500);
+      const c: Record<string, unknown[]> = { P703: [claim('Q1'), claim('Q2'), claim('Q3')], P31: [claim('Q10')], P279: [], P366: [claim('Q11')], P3493: opts.morphine ? [claim('Q20', 'Q21')] : [] };
+      return json({ claims: { [p]: c[p] } });
+    }
+    if (u.includes('action=wbgetentities')) {
+      const ids = /ids=([^&]+)/.exec(u)![1].split('|');
+      return json({ entities: Object.fromEntries(ids.map((id) => [id, { labels: LABELS[id] ? { en: { value: LABELS[id] } } : {} }])) });
+    }
+    if (u.includes('query.wikidata.org')) return opts.sparqlFail ? json({}, 503) : json(taxaSparql);
+    return json({}, 404);
+  };
+}
 
 describe('mappers', () => {
   it('maps PubChem identity and rejects malformed InChIKeys', () => {
@@ -47,24 +72,42 @@ describe('mappers', () => {
     expect(mapIdentity(props(1, 'X', 'bad" } DROP'))?.inchikey).toBeUndefined();
     expect(mapIdentity({})).toBeNull();
   });
+  it('maps item search, claims (with jurisdictions) and labels', () => {
+    expect(mapItemSearch({ query: { search: [{ title: 'Q60235' }] } })).toBe('Q60235');
+    expect(mapItemSearch({ query: { search: [{ title: 'Property:P1' }] } })).toBeNull();
+    expect(mapClaims({ claims: { P3493: [claim('Q20', 'Q21'), { ...claim('Q22'), rank: 'deprecated' }, { mainsnak: {} }] } }, 'P3493')).toEqual([{ id: 'Q20', jurisdictions: ['Q21'] }]);
+    expect(mapLabels({ entities: { Q1: { labels: { en: { value: 'x' } } }, Q2: {} } }).get('Q1')).toBe('x');
+  });
   it('groups organisms by kingdom with safe https thumbnails', () => {
-    const o = mapOrganisms(sparqlOrgs, mapKingdoms(sparqlKingdoms));
+    const o = mapOrganisms(taxaSparql);
     expect(o.map((x) => x.kingdom).sort()).toEqual(['Animals', 'Plants', 'Plants']);
     expect(o[0].imageUrl).toBe('https://commons.wikimedia.org/wiki/Special:FilePath/Coffee.jpg?width=240');
     expect(thumb('https://evil.example.com/x.jpg')).toBeUndefined();
-    expect(mapOrganisms(sparqlOrgs).every((x) => x.kingdom === 'Other organisms')).toBe(true);
   });
-  it('maps facts, descriptions and suppliers (https links only, deduplicated)', () => {
-    const f = mapFacts(facts([{ s: 'Schedule I', j: 'United States' }]));
-    expect(f).toMatchObject({ classes: ['alkaloid'], uses: ['stimulant'], legal: [{ status: 'Schedule I', jurisdiction: 'United States' }] });
+  it('maps descriptions and suppliers (https links only, deduplicated)', () => {
     expect(mapDescriptions({ InformationList: { Information: [{ Description: 'Caffeine is a stimulant found in coffee.', DescriptionSourceName: 'X', DescriptionURL: 'http://insecure' }] } })[0].url).toBeUndefined();
-    const c = mapCategories(vendors);
-    expect(c.suppliers).toEqual([{ name: 'Sigma-Aldrich', url: 'https://www.sigmaaldrich.com/x' }, { name: 'TCI', url: undefined }]);
+    expect(mapCategories(vendors).suppliers).toEqual([{ name: 'Sigma-Aldrich', url: 'https://www.sigmaaldrich.com/x' }, { name: 'TCI', url: undefined }]);
   });
-  it('only ever inserts a strictly formatted InChIKey into SPARQL', () => {
-    expect(organismsQuery(CAFFEINE_KEY)).toContain(`"${CAFFEINE_KEY}"`);
-    expect(() => factsQuery('" } ; DELETE')).toThrow();
+  it('only ever inserts validated ids into queries', () => {
+    expect(searchItemUrl(CAFFEINE_KEY)).toContain('haswbstatement%3AP235%3DRYYVLZVUVIJVGH-UHFFFAOYSA-N');
+    expect(() => searchItemUrl('" OR 1')).toThrow();
     expect(() => assertInchiKey('abc')).toThrow();
+    expect(taxaQuery(['Q1', 'Q2"}', 'X'])).toContain('VALUES ?taxon { wd:Q1 }');
+  });
+});
+
+describe('loaders', () => {
+  afterEach(() => __clearItemCache());
+  it('loads facts with legal jurisdictions via the Action API', async () => {
+    const f = await getFacts(MORPHINE_KEY, fakeApis({ morphine: true }));
+    expect(f).toEqual({ classes: ['purine alkaloid'], uses: ['stimulant'], legal: [{ status: 'Schedule II', jurisdiction: 'United States' }] });
+  });
+  it('loads organisms; falls back to names only if the query service fails', async () => {
+    expect((await getOrganisms(CAFFEINE_KEY, fakeApis())).length).toBe(3);
+    __clearItemCache();
+    const fb = await getOrganisms(CAFFEINE_KEY, fakeApis({ sparqlFail: true }));
+    expect(fb.map((o) => o.scientificName).sort()).toEqual(['Apis mellifera', 'Camellia sinensis', 'Coffea arabica']);
+    expect(fb.every((o) => o.kingdom === 'Other organisms' && !o.imageUrl)).toBe(true);
   });
 });
 
@@ -89,24 +132,8 @@ describe('safety rules', () => {
   });
 });
 
-function mockApis(kind: 'caffeine' | 'morphine' | 'legalfail') {
-  const key = kind === 'morphine' ? MORPHINE_KEY : CAFFEINE_KEY;
-  const title = kind === 'morphine' ? 'Morphine' : 'Caffeine';
-  vi.stubGlobal('fetch', async (url: string) => {
-    const u = String(url);
-    const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { 'content-type': 'application/json' } });
-    if (u.includes('/property/')) return json(props(kind === 'morphine' ? 5288826 : 2519, title, key));
-    if (u.includes('/description/')) return json({ InformationList: { Information: [{ Description: `${title} is a natural compound described for testing purposes.`, DescriptionSourceName: 'Test Source' }] } });
-    if (u.includes('/synonyms/')) return json({ InformationList: { Information: [{ Synonym: [title] }] } });
-    if (u.includes('pug_view/categories')) return json(vendors);
-    if (u.includes('query.wikidata.org')) {
-      const q = decodeURIComponent(u);
-      if (q.includes('P3493')) return kind === 'legalfail' ? json({}, 500) : json(facts(kind === 'morphine' ? [{ s: 'Schedule II', j: 'United States' }] : []));
-      if (q.includes('P171*')) return json(sparqlKingdoms);
-      return json(sparqlOrgs);
-    }
-    return json({}, 404);
-  });
+function mockApis(kind: 'caffeine' | 'morphine' | 'legalfail' | 'hang') {
+  vi.stubGlobal('fetch', fakeApis({ morphine: kind === 'morphine', legalFail: kind === 'legalfail', hang: kind === 'hang' ? 'P3493' : undefined }));
 }
 
 const page = (q: string) =>
@@ -120,6 +147,9 @@ describe('Explore page', () => {
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
+    vi.useRealTimers();
+    __clearItemCache();
+    localStorage.clear();
   });
 
   it('shows the landing page with categories when nothing is searched', () => {
@@ -163,9 +193,32 @@ describe('Explore page', () => {
     expect(screen.queryByRole('link', { name: /Sigma-Aldrich/ })).toBeNull();
   });
 
+  it('never spins forever: a hanging legal source times out and suppliers stay hidden', async () => {
+    mockApis('hang');
+    page('caffeine');
+    await screen.findByText('Arabica coffee');
+    await screen.findByText(/Could not load legal status/, {}, { timeout: 15_000 });
+    expect(screen.queryByRole('link', { name: /Sigma-Aldrich/ })).toBeNull();
+  }, 20_000);
+
+  it('remembers results: a second visit makes no network requests', async () => {
+    mockApis('caffeine');
+    page('caffeine');
+    await screen.findByRole('link', { name: /Sigma-Aldrich/ });
+    cleanup();
+    __clearItemCache();
+    const spy = vi.fn(async () => new Response('{}', { status: 500 }));
+    vi.stubGlobal('fetch', spy);
+    page('caffeine');
+    await screen.findByText('Arabica coffee');
+    await screen.findByRole('link', { name: /Sigma-Aldrich/ });
+    expect(spy).not.toHaveBeenCalled();
+  });
+
   it('explains when a compound is not found', async () => {
-    vi.stubGlobal('fetch', async () => new Response('{}', { status: 404 }));
-    page('notacompoundxyz');
-    await screen.findByText(/No compound called “notacompoundxyz” was found/);
+    vi.stubGlobal('fetch', async (u: string) => (String(u).includes('autocomplete') ? Response.json({ dictionary_terms: { compound: ['caffeine'] } }) : new Response('{}', { status: 404 })));
+    page('caffine');
+    await screen.findByText(/No compound called “caffine” was found/);
+    await screen.findByRole('button', { name: 'caffeine' });
   });
 });

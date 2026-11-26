@@ -45,7 +45,7 @@ const LIVE = {
 const CAF = 'RYYVLZVUVIJVGH-UHFFFAOYSA-N';
 const TINY_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
 async function mockCompoundApis(page) {
-  await page.route(/pubchem\.ncbi\.nlm\.nih\.gov|query\.wikidata\.org|commons\.wikimedia\.org/, (route) => {
+  await page.route(/pubchem\.ncbi\.nlm\.nih\.gov|wikidata\.org|commons\.wikimedia\.org/, (route) => {
     const u = decodeURIComponent(route.request().url());
     const json = (b) => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(b) });
     if (/\/PNG|Special:FilePath/.test(u)) return route.fulfill({ status: 200, contentType: 'image/png', body: TINY_PNG });
@@ -54,14 +54,18 @@ async function mockCompoundApis(page) {
     if (u.includes('/description/')) return json({ InformationList: { Information: [{ Description: 'TEST description of caffeine for layout checks.', DescriptionSourceName: 'Test' }] } });
     if (u.includes('/synonyms/')) return json({ InformationList: { Information: [{ Synonym: ['Caffeine', 'Guaranine'] }] } });
     if (u.includes('pug_view/categories')) return json({ SourceCategories: { Categories: [{ Category: 'Chemical Vendors', Sources: [{ SourceName: 'TEST Vendor', SourceRecordURL: 'https://vendor.example.com/x' }] }] } });
-    if (u.includes('query.wikidata.org')) {
-      if (u.includes('P3493')) return json({ results: { bindings: [] } });
-      if (u.includes('P171*')) return json({ results: { bindings: [{ taxon: { value: 'http://www.wikidata.org/entity/Q1' }, k: { value: 'http://www.wikidata.org/entity/Q756' } }] } });
+    if (u.includes('list=search')) return json({ query: { search: [{ title: 'Q100' }] } });
+    if (u.includes('action=wbgetclaims')) {
+      const p = /property=(P\d+)/.exec(u)[1];
+      const c = (id) => ({ mainsnak: { datavalue: { value: { id } } }, rank: 'normal' });
+      return json({ claims: { [p]: p === 'P703' ? [c('Q1'), c('Q2')] : p === 'P31' ? [c('Q10')] : [] } });
+    }
+    if (u.includes('action=wbgetentities')) return json({ entities: { Q10: { labels: { en: { value: 'purine alkaloid' } } } } });
+    if (u.includes('query.wikidata.org'))
       return json({ results: { bindings: [
-        { taxon: { value: 'http://www.wikidata.org/entity/Q1' }, name: { value: 'Coffea arabica' }, common: { value: 'Arabica coffee' }, image: { value: 'http://commons.wikimedia.org/wiki/Special:FilePath/A.jpg' } },
+        { taxon: { value: 'http://www.wikidata.org/entity/Q1' }, name: { value: 'Coffea arabica' }, common: { value: 'Arabica coffee' }, image: { value: 'http://commons.wikimedia.org/wiki/Special:FilePath/A.jpg' }, k: { value: 'http://www.wikidata.org/entity/Q756' } },
         { taxon: { value: 'http://www.wikidata.org/entity/Q2' }, name: { value: 'Paullinia cupana' } },
       ] } });
-    }
     return route.fulfill({ status: 404, body: '' });
   });
 }

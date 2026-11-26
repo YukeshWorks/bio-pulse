@@ -62,15 +62,53 @@ export interface Restriction {
 export type Fetcher = (url: string, init?: RequestInit) => Promise<Response>;
 
 const PUG = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug';
-const SPARQL = 'https://query.wikidata.org/sparql';
 
-async function getJson(f: Fetcher, url: string, signal?: AbortSignal): Promise<any> {
-  const res = await f(url, { signal, headers: { Accept: 'application/sparql-results+json, application/json' } });
-  if (!res.ok) throw new Error(res.status === 404 ? 'not-found' : `HTTP ${res.status}`);
-  return res.json();
+/**
+ * Fetch JSON with a hard time limit so no section can spin forever. A slow or failing source makes
+ * only its own section show "could not load"; legal-status failures keep suppliers hidden.
+ */
+async function getJson(f: Fetcher, url: string, signal?: AbortSignal, timeoutMs = 10_000): Promise<any> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const onAbort = () => ctrl.abort();
+  signal?.addEventListener('abort', onAbort);
+  try {
+    const res = await f(url, { signal: ctrl.signal, headers: { Accept: 'application/sparql-results+json, application/json' } });
+    if (!res.ok) throw new Error(res.status === 404 ? 'not-found' : `HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    if (ctrl.signal.aborted && !signal?.aborted) throw new Error('timeout');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', onAbort);
+  }
 }
 
 const arr = (v: unknown): any[] => (Array.isArray(v) ? v : []);
+
+/**
+ * Remember successful results in this browser for 7 days so repeat searches are instant.
+ * Storage may be unavailable (private mode): then it simply fetches every time.
+ */
+const CACHE_PREFIX = 'biopulse:compound:v2:';
+const CACHE_TTL = 7 * 24 * 3600 * 1000;
+export async function cached<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const k = CACHE_PREFIX + key.toLowerCase();
+  try {
+    const hit = JSON.parse(localStorage.getItem(k) ?? 'null') as { at: number; v: T } | null;
+    if (hit && Date.now() - hit.at < CACHE_TTL) return hit.v;
+  } catch {
+    /* no cache */
+  }
+  const v = await fn();
+  try {
+    localStorage.setItem(k, JSON.stringify({ at: Date.now(), v }));
+  } catch {
+    /* storage full or blocked */
+  }
+  return v;
+}
 
 // ---------------- PubChem ----------------
 
@@ -147,17 +185,17 @@ export async function getCategories(cid: number, f: Fetcher = fetch, signal?: Ab
 }
 
 // ---------------- Wikidata (LOTUS natural products, legal status, classes) ----------------
-
-const INCHIKEY = /^[A-Z]{14}-[A-Z]{10}-[A-Z]$/;
-/** InChIKeys are inserted into SPARQL text, so only the strict format is ever accepted. */
-export function assertInchiKey(k: string) {
-  if (!INCHIKEY.test(k)) throw new Error('invalid InChIKey');
-}
+// Fast path (verified against the live services): the Action API finds the item by InChIKey and
+// reads only the needed claims; SPARQL is used only for taxon details by item id (VALUES), which is
+// quick. The earlier InChIKey + label-join SPARQL query could hang for over 60 s.
 
 const KINGDOMS: Record<string, Kingdom> = { Q756: 'Plants', Q729: 'Animals', Q764: 'Fungi', Q10876: 'Bacteria' };
+const INCHIKEY = /^[A-Z]{14}-[A-Z]{10}-[A-Z]$/;
+const QID = /^Q\d+$/;
 
-function sparqlUrl(query: string): string {
-  return `${SPARQL}?format=json&query=${encodeURIComponent(query)}`;
+/** InChIKeys are inserted into search text, so only the strict format is ever accepted. */
+export function assertInchiKey(k: string) {
+  if (!INCHIKEY.test(k)) throw new Error('invalid InChIKey');
 }
 
 const bindings = (j: any): any[] => arr(j?.results?.bindings);
@@ -171,50 +209,66 @@ export function thumb(commonsUrl?: string, width = 240): string | undefined {
   return /^https:\/\/commons\.wikimedia\.org\/wiki\/Special:FilePath\//.test(u) ? `${u}?width=${width}` : undefined;
 }
 
-export function organismsQuery(inchikey: string): string {
+const wdApi = (params: Record<string, string>) => `https://www.wikidata.org/w/api.php?${new URLSearchParams({ ...params, format: 'json', origin: '*' })}`;
+
+export function searchItemUrl(inchikey: string): string {
   assertInchiKey(inchikey);
-  return `SELECT ?taxon ?name ?common ?image WHERE {
-  ?c wdt:P235 "${inchikey}" .
-  ?c wdt:P703 ?taxon .
+  return wdApi({ action: 'query', list: 'search', srsearch: `haswbstatement:P235=${inchikey}`, srlimit: '1' });
+}
+
+export function mapItemSearch(j: any): string | null {
+  const t = arr(j?.query?.search)[0]?.title;
+  return typeof t === 'string' && QID.test(t) ? t : null;
+}
+
+export interface ClaimRef {
+  id: string;
+  jurisdictions: string[];
+}
+
+/** wbgetclaims -> item ids of the claim values (+ "applies to jurisdiction" qualifiers). */
+export function mapClaims(j: any, prop: string): ClaimRef[] {
+  return arr(j?.claims?.[prop])
+    .filter((c) => c?.rank !== 'deprecated')
+    .map((c) => ({
+      id: c?.mainsnak?.datavalue?.value?.id,
+      jurisdictions: arr(c?.qualifiers?.P1001).map((q) => q?.datavalue?.value?.id).filter((x) => typeof x === 'string' && QID.test(x)),
+    }))
+    .filter((c) => typeof c.id === 'string' && QID.test(c.id));
+}
+
+export function mapLabels(j: any): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const [id, e] of Object.entries<any>(j?.entities ?? {})) {
+    const l = e?.labels?.en?.value;
+    if (typeof l === 'string') m.set(id, l);
+  }
+  return m;
+}
+
+export function taxaQuery(qids: string[]): string {
+  const ids = qids.filter((q) => QID.test(q));
+  return `SELECT ?taxon ?name ?common ?image ?k WHERE {
+  VALUES ?taxon { ${ids.map((q) => `wd:${q}`).join(' ')} }
   ?taxon wdt:P225 ?name .
   OPTIONAL { ?taxon wdt:P1843 ?common . FILTER(LANG(?common) = "en") }
   OPTIONAL { ?taxon wdt:P18 ?image }
-} LIMIT 600`;
+  OPTIONAL { VALUES ?k { wd:Q756 wd:Q729 wd:Q764 wd:Q10876 } ?taxon wdt:P171* ?k }
+}`;
 }
 
-export function kingdomQuery(inchikey: string): string {
-  assertInchiKey(inchikey);
-  return `SELECT ?taxon ?k WHERE {
-  ?c wdt:P235 "${inchikey}" .
-  ?c wdt:P703 ?taxon .
-  VALUES ?k { wd:Q756 wd:Q729 wd:Q764 wd:Q10876 }
-  ?taxon wdt:P171* ?k .
-} LIMIT 1200`;
-}
-
-export function factsQuery(inchikey: string): string {
-  assertInchiKey(inchikey);
-  return `SELECT ?kind ?prop ?label ?jur WHERE {
-  ?c wdt:P235 "${inchikey}" .
-  { ?c wdt:P31 ?x . BIND("class" AS ?kind) BIND("" AS ?prop) }
-  UNION { ?c wdt:P279 ?x . BIND("class" AS ?kind) BIND("" AS ?prop) }
-  UNION { ?c wdt:P366 ?x . BIND("use" AS ?kind) BIND("" AS ?prop) }
-  UNION { ?c p:P3493 ?st . ?st ps:P3493 ?x . OPTIONAL { ?st pq:P1001 ?j } BIND("legal" AS ?kind) BIND("" AS ?prop) }
-  ?x rdfs:label ?label . FILTER(LANG(?label) = "en")
-  OPTIONAL { ?j rdfs:label ?jur . FILTER(LANG(?jur) = "en") }
-} LIMIT 300`;
-}
-
-export function mapOrganisms(j: any, kingdoms: Map<string, Kingdom> = new Map()): Organism[] {
+export function mapOrganisms(j: any): Organism[] {
   const byQid = new Map<string, Organism>();
   for (const b of bindings(j)) {
     const qid = qidOf(val(b, 'taxon'));
     const name = val(b, 'name');
     if (!qid || !name) continue;
+    const kingdom = KINGDOMS[qidOf(val(b, 'k')) ?? ''];
     const existing = byQid.get(qid);
     if (existing) {
       existing.commonName ??= val(b, 'common');
       existing.imageUrl ??= thumb(val(b, 'image'));
+      if (kingdom && existing.kingdom === 'Other organisms') existing.kingdom = kingdom;
       continue;
     }
     byQid.set(qid, {
@@ -222,7 +276,7 @@ export function mapOrganisms(j: any, kingdoms: Map<string, Kingdom> = new Map())
       scientificName: name,
       commonName: val(b, 'common'),
       imageUrl: thumb(val(b, 'image')),
-      kingdom: kingdoms.get(qid) ?? 'Other organisms',
+      kingdom: kingdom ?? 'Other organisms',
       wikidataUrl: `https://www.wikidata.org/wiki/${qid}`,
       gbifUrl: `https://www.gbif.org/species/search?q=${encodeURIComponent(name)}`,
     });
@@ -230,49 +284,72 @@ export function mapOrganisms(j: any, kingdoms: Map<string, Kingdom> = new Map())
   return [...byQid.values()].sort((a, b) => Number(Boolean(b.imageUrl)) - Number(Boolean(a.imageUrl)) || a.scientificName.localeCompare(b.scientificName));
 }
 
-export function mapKingdoms(j: any): Map<string, Kingdom> {
-  const m = new Map<string, Kingdom>();
-  for (const b of bindings(j)) {
-    const t = qidOf(val(b, 'taxon'));
-    const k = KINGDOMS[qidOf(val(b, 'k')) ?? ''];
-    if (t && k) m.set(t, k);
+// --- loaders (memoised per InChIKey so organisms and facts share one item lookup) ---
+const itemCache = new Map<string, Promise<string | null>>();
+export function findItem(inchikey: string, f: Fetcher = fetch): Promise<string | null> {
+  const key = inchikey;
+  if (!itemCache.has(key)) {
+    const p = getJson(f, searchItemUrl(inchikey)).then(mapItemSearch);
+    p.catch(() => itemCache.delete(key));
+    itemCache.set(key, p);
   }
-  return m;
+  return itemCache.get(key)!;
+}
+export const __clearItemCache = () => itemCache.clear();
+
+async function claims(qid: string, prop: string, f: Fetcher, signal?: AbortSignal) {
+  return mapClaims(await getJson(f, wdApi({ action: 'wbgetclaims', entity: qid, property: prop }), signal), prop);
 }
 
-export function mapFacts(j: any): { classes: string[]; uses: string[]; legal: LegalStatus[] } {
-  const classes = new Set<string>();
-  const uses = new Set<string>();
-  const legal = new Map<string, LegalStatus>();
-  for (const b of bindings(j)) {
-    const label = val(b, 'label');
-    if (!label) continue;
-    const kind = val(b, 'kind');
-    if (kind === 'class') classes.add(label);
-    else if (kind === 'use') uses.add(label);
-    else if (kind === 'legal') {
-      const jur = val(b, 'jur');
-      legal.set(`${label}|${jur ?? ''}`, { status: label, jurisdiction: jur });
-    }
+async function labels(qids: string[], f: Fetcher, signal?: AbortSignal): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  const uniq = [...new Set(qids)].filter((q) => QID.test(q));
+  for (let i = 0; i < uniq.length; i += 50) {
+    const j = await getJson(f, wdApi({ action: 'wbgetentities', ids: uniq.slice(i, i + 50).join('|'), props: 'labels', languages: 'en' }), signal);
+    mapLabels(j).forEach((v, k) => out.set(k, v));
   }
-  return { classes: [...classes].slice(0, 12), uses: [...uses].slice(0, 12), legal: [...legal.values()] };
-}
-
-async function sparql(query: string, f: Fetcher, signal?: AbortSignal) {
-  return getJson(f, sparqlUrl(query), signal);
+  return out;
 }
 
 export async function getOrganisms(inchikey: string, f: Fetcher = fetch, signal?: AbortSignal): Promise<Organism[]> {
-  const [orgs, kingdoms] = await Promise.all([
-    sparql(organismsQuery(inchikey), f, signal),
-    // Kingdom grouping is a heavier query; if it fails, organisms are still shown ungrouped.
-    sparql(kingdomQuery(inchikey), f, signal).then(mapKingdoms, () => new Map<string, Kingdom>()),
-  ]);
-  return mapOrganisms(orgs, kingdoms);
+  const item = await findItem(inchikey, f);
+  if (!item) return [];
+  const taxa = [...new Set((await claims(item, 'P703', f, signal)).map((c) => c.id))].slice(0, 400);
+  if (!taxa.length) return [];
+  const chunks: string[][] = [];
+  for (let i = 0; i < taxa.length; i += 100) chunks.push(taxa.slice(i, i + 100));
+  try {
+    const results = await Promise.all(chunks.map((c) => getJson(f, `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(taxaQuery(c))}`, signal, 15_000)));
+    const merged = { results: { bindings: results.flatMap((r) => bindings(r)) } };
+    const orgs = mapOrganisms(merged);
+    if (orgs.length) return orgs;
+  } catch {
+    /* fall through to the label-only fallback below */
+  }
+  // Fallback without the query service: names only (no photos or kingdom grouping).
+  const names = await labels(taxa, f, signal);
+  return mapOrganisms({ results: { bindings: taxa.filter((q) => names.has(q)).map((q) => ({ taxon: { value: `http://www.wikidata.org/entity/${q}` }, name: { value: names.get(q) } })) } });
 }
 
-export async function getFacts(inchikey: string, f: Fetcher = fetch, signal?: AbortSignal) {
-  return mapFacts(await sparql(factsQuery(inchikey), f, signal));
+export async function getFacts(inchikey: string, f: Fetcher = fetch, signal?: AbortSignal): Promise<{ classes: string[]; uses: string[]; legal: LegalStatus[] }> {
+  const item = await findItem(inchikey, f);
+  if (!item) return { classes: [], uses: [], legal: [] }; // not on Wikidata: no records (other safety checks still apply)
+  const [p31, p279, p366, p3493] = await Promise.all(['P31', 'P279', 'P366', 'P3493'].map((p) => claims(item, p, f, signal)));
+  const names = await labels([...p31, ...p279, ...p366, ...p3493].flatMap((c) => [c.id, ...c.jurisdictions]), f, signal);
+  const lab = (c: ClaimRef) => names.get(c.id);
+  const legal: LegalStatus[] = [];
+  for (const c of p3493) {
+    const status = lab(c);
+    if (!status) continue;
+    const jurs = c.jurisdictions.map((q) => names.get(q)).filter(Boolean) as string[];
+    if (jurs.length) for (const j of jurs) legal.push({ status, jurisdiction: j });
+    else legal.push({ status });
+  }
+  return {
+    classes: [...new Set([...p31, ...p279].map(lab).filter(Boolean) as string[])].slice(0, 12),
+    uses: [...new Set(p366.map(lab).filter(Boolean) as string[])].slice(0, 12),
+    legal,
+  };
 }
 
 // ---------------- Safety ----------------
