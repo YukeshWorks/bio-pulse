@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   assessRestriction,
   autocomplete,
+  getInatInfo,
+  sentenceCase,
+  type InatInfo,
   cached,
   BROWSE_CATEGORIES,
   canShowSuppliers,
@@ -21,7 +24,7 @@ import {
   type Organism,
   type Supplier,
 } from '../lib/compound';
-import { Reveal } from '../lib/motion';
+import { Reveal, useInView } from '../lib/motion';
 
 type Load<T> = { state: 'loading' } | { state: 'ok'; data: T } | { state: 'error' };
 
@@ -204,7 +207,56 @@ const KINGDOM_SINGULAR: Record<Kingdom, string> = { Plants: 'plant', Animals: 'a
 const kingdomCount = (k: Kingdom, n: number) => `${n} ${n === 1 ? KINGDOM_SINGULAR[k] : k.toLowerCase()}`;
 const KINGDOM_ICON: Record<Kingdom, string> = { Plants: '🌿', Animals: '🐾', Fungi: '🍄', Bacteria: '🦠', 'Other organisms': '🔬' };
 
-function Organisms({ load, name }: { load: Load<Organism[]>; name: string }) {
+/**
+ * One organism. If Wikidata has no photo, common name or group, iNaturalist fills the gaps when the
+ * card scrolls into view (cached per species). Scientific names keep their correct case and italics.
+ */
+function OrganismCard({ o, index, onKingdom }: { o: Organism; index: number; onKingdom: (qid: string, k: Kingdom) => void }) {
+  const [ref, visible] = useInView<HTMLLIElement>('200px');
+  const needsInat = !o.imageUrl || !o.commonName || o.kingdom === 'Other organisms';
+  const inat = useLoad<InatInfo>(visible && needsInat ? () => cached(`inat:${o.scientificName}`, () => getInatInfo(o.scientificName)) : null, [visible, o.scientificName]);
+  const extra: InatInfo = inat.state === 'ok' ? inat.data : {};
+  const image = o.imageUrl ?? extra.imageUrl;
+  const common = o.commonName ?? extra.commonName;
+  const kingdom = o.kingdom === 'Other organisms' && extra.kingdom ? extra.kingdom : o.kingdom;
+  useEffect(() => {
+    if (kingdom !== o.kingdom) onKingdom(o.qid, kingdom);
+  }, [kingdom, o.kingdom, o.qid, onKingdom]);
+  const [broken, setBroken] = useState(false);
+  return (
+    <li ref={ref} className="card card-hover animate-rise overflow-hidden" style={{ animationDelay: `${(index % 8) * 30}ms` }}>
+      <a href={extra.url ?? o.wikidataUrl} target="_blank" rel="noopener noreferrer" className="block">
+        <div className="relative flex aspect-[4/3] items-center justify-center bg-ink-800">
+          {image && !broken ? (
+            <img src={image} alt={common ? `${sentenceCase(common)} (${o.scientificName})` : o.scientificName} loading="lazy" className="h-full w-full object-cover" referrerPolicy="no-referrer" onError={() => setBroken(true)} title={o.imageUrl ? 'Photo: Wikimedia Commons' : extra.credit} />
+          ) : needsInat && visible && inat.state === 'loading' ? (
+            <span className="skeleton absolute inset-0" />
+          ) : (
+            <span className="text-4xl opacity-60" aria-hidden>
+              {KINGDOM_ICON[kingdom]}
+            </span>
+          )}
+        </div>
+        <div className="p-3">
+          {common ? (
+            <>
+              <p className="truncate text-sm font-semibold text-fg">{sentenceCase(common)}</p>
+              <p className="truncate text-xs italic text-fg-subtle">{o.scientificName}</p>
+            </>
+          ) : (
+            <p className="truncate text-sm font-semibold italic text-fg">{o.scientificName}</p>
+          )}
+          <p className="mt-1 text-[11px] text-fg-subtle">
+            {KINGDOM_ICON[kingdom]} {kingdom}
+          </p>
+          {!o.imageUrl && extra.credit && image && <p className="mt-1 truncate text-[10px] text-fg-subtle" title={extra.credit}>Photo: {extra.credit}</p>}
+        </div>
+      </a>
+    </li>
+  );
+}
+
+function Organisms({ load, name, onKingdom }: { load: Load<Organism[]>; name: string; onKingdom: (qid: string, k: Kingdom) => void }) {
   const [tab, setTab] = useState<Kingdom | 'All'>('All');
   const [limit, setLimit] = useState(24);
   if (load.state === 'loading') return <Skeleton h="h-48" />;
@@ -227,26 +279,7 @@ function Organisms({ load, name }: { load: Load<Organism[]>; name: string }) {
       </div>
       <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {shown.slice(0, limit).map((o, i) => (
-          <Reveal as="li" key={o.qid} delay={(i % 8) * 30} className="card card-hover overflow-hidden">
-            <a href={o.wikidataUrl} target="_blank" rel="noopener noreferrer" className="block">
-              <div className="flex aspect-[4/3] items-center justify-center bg-ink-800">
-                {o.imageUrl ? (
-                  <img src={o.imageUrl} alt={o.commonName ?? o.scientificName} loading="lazy" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <span className="text-4xl opacity-60" aria-hidden>
-                    {KINGDOM_ICON[o.kingdom]}
-                  </span>
-                )}
-              </div>
-              <div className="p-3">
-                <p className="truncate text-sm font-semibold capitalize text-fg">{o.commonName ?? o.scientificName}</p>
-                <p className="truncate text-xs italic text-fg-subtle">{o.scientificName}</p>
-                <p className="mt-1 text-[11px] text-fg-subtle">
-                  {KINGDOM_ICON[o.kingdom]} {o.kingdom}
-                </p>
-              </div>
-            </a>
-          </Reveal>
+          <OrganismCard key={o.qid} o={o} index={i} onKingdom={onKingdom} />
         ))}
       </ul>
       {shown.length > limit && (
@@ -255,7 +288,7 @@ function Organisms({ load, name }: { load: Load<Organism[]>; name: string }) {
         </button>
       )}
       <p className="mt-4 text-xs text-fg-subtle">
-        Source: LOTUS natural-products data on Wikidata, compiled from published research. “Found in” means at least one study detected it; amounts can be tiny and vary by part of the organism, region and season. Photos from Wikimedia Commons.
+        Source: LOTUS natural-products data on Wikidata, compiled from published research. “Found in” means at least one study detected it; amounts can be tiny and vary by part of the organism, region and season. Photos from Wikimedia Commons and iNaturalist (credited on each photo).
       </p>
     </>
   );
@@ -373,6 +406,10 @@ function Result({ q }: { q: string }) {
   const cats = useLoad(cid ? () => cached(`cats:${cid}`, () => getCategories(cid)) : null, [cid]);
   const facts = useLoad(key ? () => cached(`facts:${key}`, () => getFacts(key)) : null, [key]);
   const orgs = useLoad<Organism[]>(key ? () => cached(`orgs:${key}`, () => getOrganisms(key)) : null, [key]);
+  // Groups learned from iNaturalist (for organisms Wikidata could not place) update counts and tabs.
+  const [kingdomFix, setKingdomFix] = useState<Record<string, Kingdom>>({});
+  const onKingdom = useCallback((qid: string, k: Kingdom) => setKingdomFix((m) => (m[qid] === k ? m : { ...m, [qid]: k })), []);
+  const orgsEff: Load<Organism[]> = orgs.state === 'ok' ? { state: 'ok', data: orgs.data.map((o) => (kingdomFix[o.qid] ? { ...o, kingdom: kingdomFix[o.qid] } : o)) } : orgs;
 
   const legal = facts.state === 'ok' ? facts.data.legal : facts.state === 'error' || (ident && !key) ? null : undefined;
   const restriction = useMemo(() => {
@@ -403,8 +440,8 @@ function Result({ q }: { q: string }) {
 
   const name = ident.title || q;
   const firstDesc = desc.state === 'ok' ? desc.data[0] : undefined;
-  const orgCount = orgs.state === 'ok' ? orgs.data.length : null;
-  const byKingdom = orgs.state === 'ok' ? KINGDOM_ORDER.map((k) => [k, orgs.data.filter((o) => o.kingdom === k).length] as const).filter(([, n]) => n) : [];
+  const orgCount = orgsEff.state === 'ok' ? orgsEff.data.length : null;
+  const byKingdom = orgsEff.state === 'ok' ? KINGDOM_ORDER.map((k) => [k, orgsEff.data.filter((o) => o.kingdom === k).length] as const).filter(([, n]) => n) : [];
 
   return (
     <div className="space-y-5">
@@ -481,7 +518,7 @@ function Result({ q }: { q: string }) {
       )}
 
       <Section id="organisms-title" title={`Where ${name} is found in nature`} subtitle="Plants, animals, fungi and microbes in which it has been detected.">
-        <Organisms load={key ? orgs : { state: 'ok', data: [] }} name={name} />
+        <Organisms load={key ? orgsEff : { state: 'ok', data: [] }} name={name} onKingdom={onKingdom} />
       </Section>
 
       <Section id="legal-title" title="Is it legal?" subtitle="India first, then other countries.">

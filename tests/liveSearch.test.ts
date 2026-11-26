@@ -105,3 +105,16 @@ describe('searchEverywhere', () => {
     expect(states.europepmc.status).toBe('ok');
   });
 });
+
+describe('progressive results', () => {
+  it('reports results as each source answers', async () => {
+    const partials: number[] = [];
+    const slow: Fetcher = async (u, i) => {
+      if (u.includes('openalex')) await new Promise((r) => setTimeout(r, 30));
+      return routes()(u, i);
+    };
+    await searchEverywhere('x', ['clinicaltrials', 'openalex'], { fetcher: slow, onPartial: (r) => partials.push(r.length) });
+    expect(partials.length).toBe(2);
+    expect(partials[0]).toBeLessThan(partials[1]);
+  });
+});

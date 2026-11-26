@@ -363,7 +363,7 @@ export const RESTRICTED_NAMES = new Set([
   // opioids & opiates
   'morphine', 'heroin', 'diacetylmorphine', 'codeine', 'thebaine', 'oripavine', 'oxycodone', 'hydrocodone', 'fentanyl', 'carfentanil', 'methadone', 'opium', 'tramadol', 'buprenorphine', 'pethidine', 'meperidine', 'tapentadol',
   // stimulants
-  'cocaine', 'ecgonine', 'amphetamine', 'methamphetamine', 'cathinone', 'cathine', 'methcathinone', 'mephedrone', 'mdpv', 'methylphenidate', 'ephedrine', 'pseudoephedrine', 'norephedrine', 'phenylpropanolamine',
+  'cocaine', 'ecgonine', 'amphetamine', 'methamphetamine', 'metamfetamine', 'methylamphetamine', 'desoxyephedrine', 'levomethamphetamine', 'dexamfetamine', 'dextroamphetamine', 'lisdexamfetamine', 'benzphetamine', 'fenethylline', 'cathinone', 'cathine', 'methcathinone', 'mephedrone', 'mdpv', 'methylphenidate', 'ephedrine', 'pseudoephedrine', 'norephedrine', 'phenylpropanolamine',
   // psychedelics & dissociatives
   'lsd', 'lysergide', 'lysergic acid diethylamide', 'lysergic acid', 'ergine', 'psilocybin', 'psilocin', 'mescaline', 'dmt', 'n,n-dimethyltryptamine', '5-meo-dmt', 'bufotenine', 'ibogaine', 'mdma', 'mda', 'mdea', 'ketamine', 'phencyclidine', 'pcp', 'salvinorin a', 'dom', '2c-b',
   // cannabinoids
@@ -386,9 +386,48 @@ export function isRestrictiveStatus(status: string): boolean {
   return LEGAL_RESTRICTED.test(status);
 }
 
+const STEREO_PREFIX = /^(?:\(?[±+-]\)?-?|\((?:r|s|rs|r,s|±)\)-|(?:dl|d|l|rac|r|s|levo|dextro)-)+/;
+const SALT_SUFFIX = /\s+(?:hydrochloride|dihydrochloride|hcl|hydrobromide|sulfate|sulphate|bisulfate|phosphate|tartrate|bitartrate|citrate|acetate|maleate|fumarate|mesylate|salt|base|free base|freebase|monohydrate|dihydrate|hydrate|anhydrous|racemate|\(\d:\d\))+$/;
+
+/** Lower-case a name and strip stereo prefixes (DL-, (+)-, (S)-, levo-…) and salt/hydrate suffixes. */
+export function normaliseName(n: string): string {
+  let s = n.toLowerCase().trim().replace(/\s+/g, ' ');
+  for (let i = 0; i < 3; i++) s = s.replace(STEREO_PREFIX, '').replace(SALT_SUFFIX, '').trim();
+  return s;
+}
+
+const LONG_RESTRICTED = [...RESTRICTED_NAMES].filter((n) => n.length >= 6);
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const LONG_RESTRICTED_RE = new RegExp(`(?:^|[^a-z0-9])(${LONG_RESTRICTED.map(escapeRe).join('|')})(?:$|[^a-z0-9])`);
+
+/**
+ * Returns the restricted name a compound name refers to, or undefined. Catches variants such as
+ * "DL-methamphetamine", "(+)-cocaine hydrochloride" or "morphine sulfate pentahydrate" (whole-word
+ * match for names of 6+ letters; short names like "lsd" must match exactly).
+ */
+export function matchRestrictedName(name: string): string | undefined {
+  const n = normaliseName(name);
+  if (RESTRICTED_NAMES.has(n)) return n;
+  return LONG_RESTRICTED_RE.exec(n)?.[1];
+}
+
+const PROCEDURE_WORDS = /\b(extract\w*|synthes\w*|synthetic route|produc\w*|manufactur\w*|make|making|cook\w*|isolat\w*|purif\w*|precursor\w*|recipe|how to|grow\w*|cultivat\w*|refin\w*)\b/i;
+
+/**
+ * True when a free-text search combines a controlled/dangerous compound with production words
+ * (e.g. "methamphetamine extraction"). The search pages refuse to run those queries.
+ */
+export function isRestrictedProcedureQuery(q: string): boolean {
+  if (!PROCEDURE_WORDS.test(q)) return false;
+  const words = q.toLowerCase().split(/[^a-z0-9(),+±-]+/).filter(Boolean);
+  if (matchRestrictedName(q)) return true;
+  for (let i = 0; i < words.length; i++) for (let len = 1; len <= 3; len++) if (matchRestrictedName(words.slice(i, i + len).join(' '))) return true;
+  return false;
+}
+
 export function assessRestriction(input: { names: string[]; legal: LegalStatus[] | null; regulatorySources: string[] | null }): Restriction {
   const reasons: string[] = [];
-  const hit = input.names.map((n) => n.toLowerCase().trim()).find((n) => RESTRICTED_NAMES.has(n));
+  const hit = input.names.map(matchRestrictedName).find(Boolean);
   if (hit) reasons.push(`“${hit}” is on BioPulse’s list of controlled drugs, precursors and dangerous toxins`);
   const legalHits = (input.legal ?? []).filter((l) => isRestrictiveStatus(l.status));
   if (legalHits.length) reasons.push(`Listed as ${legalHits[0].status}${legalHits[0].jurisdiction ? ` (${legalHits[0].jurisdiction})` : ''}${legalHits.length > 1 ? ` and ${legalHits.length - 1} more` : ''}`);
@@ -423,3 +462,51 @@ export const BROWSE_CATEGORIES: { name: string; blurb: string; examples: string[
   { name: 'Everyday stimulants', blurb: 'Found in drinks people use daily', examples: ['Caffeine', 'Theobromine', 'Theanine'] },
   { name: 'From animals & the sea', blurb: 'Compounds made by animals and marine life', examples: ['Taurine', 'Squalene', 'Melatonin', 'Fucoxanthin'] },
 ];
+
+// ---------------- Organism photos (iNaturalist fallback) ----------------
+
+export interface InatInfo {
+  imageUrl?: string;
+  credit?: string;
+  commonName?: string;
+  kingdom?: Kingdom;
+  url?: string;
+}
+
+const INAT_KINGDOM: Record<string, Kingdom> = {
+  Plantae: 'Plants',
+  Fungi: 'Fungi',
+  Animalia: 'Animals',
+  Mammalia: 'Animals',
+  Aves: 'Animals',
+  Reptilia: 'Animals',
+  Amphibia: 'Animals',
+  Actinopterygii: 'Animals',
+  Mollusca: 'Animals',
+  Arachnida: 'Animals',
+  Insecta: 'Animals',
+};
+const INAT_IMG = /^https:\/\/(inaturalist-open-data\.s3\.amazonaws\.com|static\.inaturalist\.org)\//;
+
+/** Map an iNaturalist /v1/taxa search result; only an exact scientific-name match is accepted. */
+export function mapInat(j: any, scientificName: string): InatInfo {
+  const t = arr(j?.results).find((r) => typeof r?.name === 'string' && r.name.toLowerCase() === scientificName.toLowerCase());
+  if (!t) return {};
+  const photo = t.default_photo;
+  const img = typeof photo?.medium_url === 'string' && INAT_IMG.test(photo.medium_url) ? photo.medium_url : undefined;
+  return {
+    imageUrl: img,
+    credit: img && typeof photo?.attribution === 'string' ? `${photo.attribution} · iNaturalist` : undefined,
+    commonName: typeof t.preferred_common_name === 'string' ? t.preferred_common_name : undefined,
+    kingdom: INAT_KINGDOM[t.iconic_taxon_name],
+    url: Number.isInteger(t.id) ? `https://www.inaturalist.org/taxa/${t.id}` : undefined,
+  };
+}
+
+export async function getInatInfo(scientificName: string, f: Fetcher = fetch): Promise<InatInfo> {
+  const url = `https://api.inaturalist.org/v1/taxa?${new URLSearchParams({ q: scientificName, per_page: '3' })}`;
+  return mapInat(await getJson(f, url, undefined, 8_000), scientificName);
+}
+
+/** Capitalise only the first letter of a common name ("tea plant" -> "Tea plant"). */
+export const sentenceCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
