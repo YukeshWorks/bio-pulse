@@ -1,7 +1,38 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-25T10:02:24.570Z",
+  "updatedAt": "2026-11-26T09:46:09.225Z",
   "days": [
+    {
+      "date": "2026-11-26",
+      "total": 199,
+      "byEvidence": {
+        "PEER-REVIEWED": 103,
+        "REGULATORY UPDATE": 2,
+        "CLINICAL TRIAL": 8,
+        "PREPRINT": 86
+      },
+      "byCategory": {
+        "immunotechnology": 26,
+        "crispr-genetic-engineering": 13,
+        "biomaterials-nanobiotech": 14,
+        "microbiology": 30,
+        "molecular-biology": 22,
+        "stem-cells-regenerative": 23,
+        "pharma-biotech": 7,
+        "biosensors": 6,
+        "bioinformatics": 13,
+        "synthetic-biology": 4,
+        "food-biotech": 5,
+        "vaccines-diagnostics": 10,
+        "environmental-biotech": 7,
+        "marine-biotech": 4,
+        "industrial-biotech": 3,
+        "protein-engineering": 3,
+        "agricultural-biotech": 4,
+        "ai-drug-discovery": 5
+      },
+      "briefing": "Today's top biotech story is “Platinum-resistant ovarian cancer”, a peer-reviewed study, one of 199 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-25",
       "total": 147,
