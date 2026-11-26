@@ -27,6 +27,7 @@ export function HomePage() {
   return (
     <div className="space-y-10">
       <div className="space-y-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Biotech news today</h1>
         <StatusStrip data={data} status={status.data} />
         <StaleBanner data={data} status={status.data} />
         <QuickSearch />

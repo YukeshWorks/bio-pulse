@@ -217,6 +217,12 @@ A preserved-previous outcome still redeploys, so the site can show the failure n
 
 ## Changelog
 
+- **v3.0:** the **Compound explorer** is the new homepage (`/#/`); the daily news moved to `/#/news`.
+  - Type a compound name to see what it is, its structure, which plants, animals, fungi and microbes it has been found in (scientific and common names, photos, grouped by kingdom), its uses and classes, and its legal status by country, with India first.
+  - Also shows how such compounds are generally obtained (an overview plus links to published research) and research-chemical suppliers.
+  - Data: PubChem and Wikidata/LOTUS. Free, no keys.
+  - **Safety:** controlled drugs, precursors and dangerous toxins are detected by a name list, Wikidata legal status and PubChem drug-control sources. For them, suppliers and extraction information are never shown. The check fails closed: if legal status can't be loaded, suppliers stay hidden.
+
 - **v2.4:** reader features, all free and private.
   - **Save** papers to a reading list and **export** it for Zotero, Mendeley or EndNote (RIS, BibTeX, text).
   - **Cite** and **Share** buttons on every story.

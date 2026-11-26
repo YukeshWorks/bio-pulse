@@ -41,7 +41,33 @@ const LIVE = {
   'clinicaltrials.gov': { studies: [{ protocolSection: { identificationModule: { nctId: 'NCT09999911', briefTitle: 'TEST base editing trial' }, statusModule: { overallStatus: 'RECRUITING' } } }] },
   'api.openalex.org': { results: [{ id: 'https://openalex.org/W9990002', display_name: 'TEST OpenAlex article', type: 'article', primary_location: { source: { type: 'journal' } } }] },
 };
+/** Synthetic PubChem + Wikidata responses for the compound explorer. */
+const CAF = 'RYYVLZVUVIJVGH-UHFFFAOYSA-N';
+const TINY_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+async function mockCompoundApis(page) {
+  await page.route(/pubchem\.ncbi\.nlm\.nih\.gov|query\.wikidata\.org|commons\.wikimedia\.org/, (route) => {
+    const u = decodeURIComponent(route.request().url());
+    const json = (b) => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(b) });
+    if (/\/PNG|Special:FilePath/.test(u)) return route.fulfill({ status: 200, contentType: 'image/png', body: TINY_PNG });
+    if (u.includes('/autocomplete/')) return json({ dictionary_terms: { compound: ['caffeine'] } });
+    if (u.includes('/property/')) return json({ PropertyTable: { Properties: [{ CID: 2519, Title: 'Caffeine', MolecularFormula: 'C8H10N4O2', MolecularWeight: '194.19', InChIKey: CAF }] } });
+    if (u.includes('/description/')) return json({ InformationList: { Information: [{ Description: 'TEST description of caffeine for layout checks.', DescriptionSourceName: 'Test' }] } });
+    if (u.includes('/synonyms/')) return json({ InformationList: { Information: [{ Synonym: ['Caffeine', 'Guaranine'] }] } });
+    if (u.includes('pug_view/categories')) return json({ SourceCategories: { Categories: [{ Category: 'Chemical Vendors', Sources: [{ SourceName: 'TEST Vendor', SourceRecordURL: 'https://vendor.example.com/x' }] }] } });
+    if (u.includes('query.wikidata.org')) {
+      if (u.includes('P3493')) return json({ results: { bindings: [] } });
+      if (u.includes('P171*')) return json({ results: { bindings: [{ taxon: { value: 'http://www.wikidata.org/entity/Q1' }, k: { value: 'http://www.wikidata.org/entity/Q756' } }] } });
+      return json({ results: { bindings: [
+        { taxon: { value: 'http://www.wikidata.org/entity/Q1' }, name: { value: 'Coffea arabica' }, common: { value: 'Arabica coffee' }, image: { value: 'http://commons.wikimedia.org/wiki/Special:FilePath/A.jpg' } },
+        { taxon: { value: 'http://www.wikidata.org/entity/Q2' }, name: { value: 'Paullinia cupana' } },
+      ] } });
+    }
+    return route.fulfill({ status: 404, body: '' });
+  });
+}
+
 async function mockLiveApis(page) {
+  await mockCompoundApis(page);
   await page.route(/ebi\.ac\.uk|eutils\.ncbi|clinicaltrials\.gov\/api|api\.openalex\.org/, (route) => {
     const u = route.request().url();
     const body = u.includes('esearch') ? LIVE.esearch : u.includes('esummary') ? LIVE.esummary : LIVE[new URL(u).host];
@@ -51,7 +77,7 @@ async function mockLiveApis(page) {
 
 const listen = (srv) => new Promise((r) => srv.listen(0, '127.0.0.1', () => r(srv.address().port)));
 
-const ROUTES = ['/', '/search', '/search?q=base%20editing', '/saved', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
+const ROUTES = ['/', '/?q=caffeine', '/news', '/search', '/search?q=base%20editing', '/saved', '/latest', '/papers', '/patents', '/trials', '/categories', '/categories/crispr-genetic-engineering', '/archive', '/archive/2026-11-18', '/about'];
 const WIDTHS = [320, 390, 768, 1280];
 const failures = [];
 const fail = (m) => {
@@ -79,11 +105,15 @@ try {
       const bad = await page.$$eval('article a[href]', (as) => as.map((a) => a.getAttribute('href')).filter((h) => h && !h.startsWith('https://') && !h.startsWith('#')));
       if (bad.length) fail(`${route} @${width}px has non-https source links: ${bad.slice(0, 3).join(', ')}`);
     }
-    await page.goto(`http://127.0.0.1:${port}/#/`, { waitUntil: 'networkidle' });
+    await page.goto(`http://127.0.0.1:${port}/#/news`, { waitUntil: 'networkidle' });
     const briefing = await page.textContent('#briefing-title');
     if (!/one sentence/i.test(briefing ?? '')) fail(`home @${width}px: briefing heading missing`);
     const cards = await page.$$('section[aria-labelledby="top-title"] article');
-    if (cards.length !== 3) fail(`home @${width}px: expected 3 discoveries, found ${cards.length}`);
+    if (cards.length !== 3) fail(`news @${width}px: expected 3 discoveries, found ${cards.length}`);
+    await page.goto(`http://127.0.0.1:${port}/#/?q=caffeine`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(400);
+    const organisms = await page.$$eval('section li a[href*="wikidata.org"]', (as) => as.length);
+    if (organisms < 2) fail(`explore @${width}px: expected organism cards, found ${organisms}`);
     await page.goto(`http://127.0.0.1:${port}/#/search?q=base%20editing`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(300);
     const live = await page.$$eval('section[aria-live] li a[href^="https://"]', (as) => as.length);
@@ -96,7 +126,7 @@ try {
   const empty = serve(null);
   const p2 = await listen(empty);
   const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
-  await page.goto(`http://127.0.0.1:${p2}/#/`, { waitUntil: 'networkidle' });
+  await page.goto(`http://127.0.0.1:${p2}/#/news`, { waitUntil: 'networkidle' });
   if (!(await page.$('text=No data has been published yet'))) fail('missing-data state not rendered');
   else console.log('✓ missing-data state renders without placeholder content');
   empty.close();
