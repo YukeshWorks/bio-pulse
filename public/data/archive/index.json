@@ -1,7 +1,36 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-26T09:46:09.225Z",
+  "updatedAt": "2026-11-27T09:51:51.908Z",
   "days": [
+    {
+      "date": "2026-11-27",
+      "total": 192,
+      "byEvidence": {
+        "PEER-REVIEWED": 130,
+        "PREPRINT": 62
+      },
+      "byCategory": {
+        "crispr-genetic-engineering": 20,
+        "molecular-biology": 17,
+        "synthetic-biology": 8,
+        "stem-cells-regenerative": 16,
+        "microbiology": 30,
+        "vaccines-diagnostics": 7,
+        "immunotechnology": 24,
+        "biosensors": 5,
+        "industrial-biotech": 9,
+        "bioinformatics": 12,
+        "environmental-biotech": 3,
+        "food-biotech": 9,
+        "pharma-biotech": 2,
+        "biomaterials-nanobiotech": 16,
+        "protein-engineering": 2,
+        "marine-biotech": 5,
+        "ai-drug-discovery": 5,
+        "bioprocess-engineering": 2
+      },
+      "briefing": "Today's top biotech story is “Magnetic bead-assisted DSN/CRISPR-Cas12a fluorescence biosensor for sensitive and specific detection of…”, a peer-reviewed study, one of 192 new records today, most of them in microbiology."
+    },
     {
       "date": "2026-11-26",
       "total": 199,
