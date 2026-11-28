@@ -1,7 +1,39 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-27T09:51:51.908Z",
+  "updatedAt": "2026-11-28T09:04:27.386Z",
   "days": [
+    {
+      "date": "2026-11-28",
+      "total": 195,
+      "byEvidence": {
+        "PEER-REVIEWED": 100,
+        "CLINICAL TRIAL": 9,
+        "REGULATORY UPDATE": 1,
+        "PREPRINT": 85
+      },
+      "byCategory": {
+        "bioinformatics": 16,
+        "molecular-biology": 26,
+        "microbiology": 20,
+        "vaccines-diagnostics": 11,
+        "crispr-genetic-engineering": 21,
+        "biomaterials-nanobiotech": 19,
+        "biosensors": 5,
+        "stem-cells-regenerative": 16,
+        "ai-drug-discovery": 11,
+        "immunotechnology": 22,
+        "marine-biotech": 4,
+        "environmental-biotech": 2,
+        "pharma-biotech": 8,
+        "synthetic-biology": 2,
+        "protein-engineering": 6,
+        "industrial-biotech": 1,
+        "agricultural-biotech": 2,
+        "bioprocess-engineering": 2,
+        "food-biotech": 1
+      },
+      "briefing": "Today's top biotech story is “Direct lineage conversion of postnatal mouse cortical astrocytes to oligodendrocyte…”, a peer-reviewed study, one of 195 new records today, most of them in molecular biology."
+    },
     {
       "date": "2026-11-27",
       "total": 192,
